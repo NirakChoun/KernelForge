@@ -274,3 +274,39 @@ Flagged (recorded as measured): Triton beats `cublasSgemm` at 1024 (104.7%) and 
 Failures: none in job 24047985. The previous session's Mac working folder held no uncopied KernelForge files.
 
 Open questions (details in `docs/stage7.md`): two cuBLAS paths differ by 4.8% at 1024; register growth at non-divisible shapes; softmax at 3000 columns; autotune CSV lacks run-identification columns.
+
+## Stage 8 report
+
+Details in `docs/stage8.md`.
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 8d8eeb3 | stage8: add cuda softmax and rmsnorm kernels as a shared library |
+| 6b611a7 | stage8: add ml kernel driver with fp64 reference checks and run script |
+| fec3388 | stage8: add softmax and rmsnorm results for cuda, triton, pytorch (job 24048749) |
+| 4587723 | stage8: add row lengths 1001 and 4099 to cover the cuda scalar path |
+| 3e97e66 | stage8: add results for row lengths 1001 and 4099 (job 24049119) |
+| a4eb6e8 | stage8: add stage 8 doc |
+
+Headline results (2^26 FP32 elements per shape, L2 flushed, jobs 24048749 and 24049119, GB/s and % of 1530):
+
+| Kernel | Range over 13 row lengths (128 to 16384) |
+|---|---|
+| cuda_softmax | 1417.0 to 1472.6 (92.6 to 96.2) |
+| triton_softmax | 1464.5 to 1498.0 (95.7 to 97.9) |
+| torch_softmax | 1448.3 to 1489.5 (94.7 to 97.3) |
+| cuda_rmsnorm | 1417.0 to 1481.2 (92.6 to 96.8) |
+| triton_rmsnorm | 1424.7 to 1498.0 (93.1 to 97.9) |
+| torch_rmsnorm | 766.5 to 1464.5 (50.1 to 95.7) |
+
+Flagged (recorded as measured): `F.rms_norm` at 50.1% of 1530 GB/s at 1001 columns and 64.4% at 16384; Triton RMSNorm at 512 columns below CUDA.
+
+Failures: job 24048053 (uncommitted earlier code) failed CUDA correctness at every row length below 16384; the code was fixed before commit and the committed version passed all 78 checks. Job 24048144 (previous session test run) failed writing to an output directory outside the repository; not a kernel failure.
+
+Open questions (details in `docs/stage8.md`): unrecorded fix of the earlier CUDA reduction bug; 1.024 to 2.048 us timer quantization; `F.rms_norm` dispatch; clocks not logged; DRAM bytes pending counter access.
+
+## Stage 9
+
+Skipped by choice (project owner's decision, 2026-09-26). No code or results.
