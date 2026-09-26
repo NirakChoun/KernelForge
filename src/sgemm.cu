@@ -106,6 +106,38 @@ __global__ void __launch_bounds__(BM * BN / TM)
   }
 }
 
+// v5: each thread computes a TM x TN block of outputs from TM A values and TN B values
+// held in registers: TM * TN multiply-adds per TM + TN shared-memory loads.
+template <int BM, int BN, int BK, int TM, int TN>
+__global__ void __launch_bounds__((BM / TM) * (BN / TN))
+    sgemm_2d(int M, int N, int K, const float* __restrict__ A, const float* __restrict__ B,
+             float* __restrict__ C) {
+  constexpr int NT = (BM / TM) * (BN / TN);
+  __shared__ float As[BM * BK];
+  __shared__ float Bs[BK * BN];
+  const int t_col = threadIdx.x % (BN / TN), t_row = threadIdx.x / (BN / TN);
+  const int b_row = blockIdx.y * BM, b_col = blockIdx.x * BN;
+  float acc[TM][TN] = {};
+  float reg_m[TM], reg_n[TN];
+  for (int k0 = 0; k0 < K; k0 += BK) {
+    load_tile<BM, BK, NT>(A, M, K, K, b_row, k0, As);
+    load_tile<BK, BN, NT>(B, K, N, N, k0, b_col, Bs);
+    __syncthreads();
+    for (int d = 0; d < BK; ++d) {
+      for (int i = 0; i < TM; ++i) reg_m[i] = As[(t_row * TM + i) * BK + d];
+      for (int j = 0; j < TN; ++j) reg_n[j] = Bs[d * BN + t_col * TN + j];
+      for (int i = 0; i < TM; ++i)
+        for (int j = 0; j < TN; ++j) acc[i][j] += reg_m[i] * reg_n[j];
+    }
+    __syncthreads();
+  }
+  for (int i = 0; i < TM; ++i)
+    for (int j = 0; j < TN; ++j) {
+      const int r = b_row + t_row * TM + i, c = b_col + t_col * TN + j;
+      if (r < M && c < N) C[r * N + c] = acc[i][j];
+    }
+}
+
 struct Plan {
   std::string name, variant, grid, block;
   kf::KernelInfo ki;
@@ -149,6 +181,14 @@ static Plan blocktile_1d_plan(const Problem& p) {
                      dim3(cdiv(p.N, BN), cdiv(p.M, BM)), dim3(BM * BN / TM), p);
 }
 
+template <int BM, int BN, int BK, int TM, int TN>
+static Plan blocktile_2d_plan(const Problem& p) {
+  const std::string cfg = std::to_string(BM) + "x" + std::to_string(BN) + "x" + std::to_string(BK) +
+                          "x" + std::to_string(TM) + "x" + std::to_string(TN);
+  return kernel_plan("v5_2d_regblock", "BMxBNxBKxTMxTN=" + cfg, sgemm_2d<BM, BN, BK, TM, TN>,
+                     dim3(cdiv(p.N, BN), cdiv(p.M, BM)), dim3((BM / TM) * (BN / TN)), p);
+}
+
 static Plan make_plan(int version, const std::string& cfg, const Problem& p, cublasHandle_t h) {
   auto bad_cfg = [&]() -> Plan {
     std::fprintf(stderr, "unknown --cfg '%s' for version %d\n", cfg.c_str(), version);
@@ -187,6 +227,13 @@ static Plan make_plan(int version, const std::string& cfg, const Problem& p, cub
       if (cfg == "64x64x16x8") return blocktile_1d_plan<64, 64, 16, 8>(p);
       if (cfg == "128x64x8x8") return blocktile_1d_plan<128, 64, 8, 8>(p);
       if (cfg == "64x64x8x16") return blocktile_1d_plan<64, 64, 8, 16>(p);
+      return bad_cfg();
+    case 5:
+      if (cfg.empty() || cfg == "128x128x8x8x8") return blocktile_2d_plan<128, 128, 8, 8, 8>(p);
+      if (cfg == "64x64x8x8x8") return blocktile_2d_plan<64, 64, 8, 8, 8>(p);
+      if (cfg == "128x64x8x8x8") return blocktile_2d_plan<128, 64, 8, 8, 8>(p);
+      if (cfg == "64x64x8x4x4") return blocktile_2d_plan<64, 64, 8, 4, 4>(p);
+      if (cfg == "128x128x16x8x8") return blocktile_2d_plan<128, 128, 16, 8, 8>(p);
       return bad_cfg();
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
