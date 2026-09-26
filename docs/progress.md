@@ -209,6 +209,7 @@ Commits:
 
 | Hash | Message |
 |---|---|
+| abfcfc4 | stage3: add cublas fp32 verification tool |
 | 48dfcfe | stage3: record cublas fp32 verification results and kernel names |
 | 7de9841 | stage1: add 32-byte sector model estimate of dram bytes |
 | 5202a95 | stage1: document effective bandwidth counting and sector model comparison |
