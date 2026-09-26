@@ -345,3 +345,21 @@ Flagged (recorded as measured): per clock, Triton beats `cublasSgemm` only at 51
 Failures: none; 120 correctness checks passed. Probe 24037344 cancelled at the owner's request.
 
 Open questions (details in `docs/capstone.md`): `torch.matmul` vs `cublasSgemm` per clock; autotuning on raw time under a varying clock; v6 ahead per clock at 4096 x 4096 x 1000; high-register Triton softmax configs; num_stages at 8192.
+
+## Stage 11 report (project quality)
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| ca15993 | stage11: pin python environment in requirements.txt |
+| f4c9b9e | stage11: add docs index linking every stage doc |
+| 656e077 | stage11: update readme with status, environment, all stage results, and reproduction steps |
+
+- README: status, environment, results for every stage, repository layout, and reproduction steps (modules, venv from `requirements.txt`, build, per-stage `sbatch` commands).
+- `docs/index.md` links every stage doc, the roofline doc, the capstone, and this log.
+- Clean-clone build: job 24050475 (2026-09-26, `high`) cloned the repository at 656e077 into a temporary directory, configured and built all 9 targets (`device_info`, `vector_add`, `saxpy`, `copy`, `mem_patterns`, `reduce`, `sgemm`, `cublas_fp32_check`, `libkf_ml.so`) with no errors, and ran two smoke tests: `vector_add 16777216 --flush` PASS (1536.0 GB/s), `sgemm 1000 --version 6` PASS (12432.9 GFLOP/s). The Python environment was not reinstalled in that job.
+
+Hive usage from 2026-09-26 on: one GPU job at a time on `high`, login-node builds with at most `-j 2`, no counter probes.
+
+Remaining for the owner: the `Interpretation TODO(Nirak)` sections in every stage doc and the capstone; Nsight Compute profiling under Pending profiling if counter access becomes available.
