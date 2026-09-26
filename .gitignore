@@ -1,0 +1,12 @@
+build/
+*.o
+*.a
+*.so
+*.nsys-rep
+*.ncu-rep
+*.sqlite
+*.qdrep
+slurm-*.out
+__pycache__/
+.venv/
+.DS_Store
