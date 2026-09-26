@@ -44,3 +44,7 @@ kf_add_bench(saxpy src/saxpy.cu)
 kf_add_bench(copy src/copy.cu)
 kf_add_bench(mem_patterns src/mem_patterns.cu)
 kf_add_bench(reduce src/reduce.cu)
+
+find_package(CUDAToolkit REQUIRED)
+kf_add_bench(sgemm src/sgemm.cu)
+target_link_libraries(sgemm PRIVATE CUDA::cublas)

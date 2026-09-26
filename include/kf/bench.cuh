@@ -142,8 +142,9 @@ inline CsvRow to_row(const Record& r, const BenchArgs& a) {
   return row;
 }
 
-// Prints one line and appends to the CSV unless --no-csv.
-inline void report(const Record& r, const BenchArgs& a) {
+// Prints one line and appends to the CSV unless --no-csv. extra adds benchmark-specific
+// columns after the common ones.
+inline void report(const Record& r, const BenchArgs& a, const CsvRow& extra = CsvRow()) {
   std::printf(
       "RESULT kernel=%s variant=%s n=%zu grid=%s block=%s regs=%d local=%d smem=%d occ=%.3f "
       "K=%d flush=%d median_ms=%.6f min_ms=%.6f stddev_ms=%.6f %s=%.1f launch_bound=%d\n",
@@ -151,7 +152,11 @@ inline void report(const Record& r, const BenchArgs& a) {
       r.ki.local_bytes, r.ki.static_smem, r.ki.occupancy, a.launches, a.flush ? 1 : 0,
       r.s.median_ms, r.s.min_ms, r.s.stddev_ms, r.unit.c_str(), r.metric(),
       r.launch_bound() ? 1 : 0);
-  if (!a.csv.empty()) append_csv(a.csv, run_info(), to_row(r, a));
+  if (!a.csv.empty()) {
+    CsvRow row = to_row(r, a);
+    for (const auto& [k, v] : extra.cols()) row.add(k, v);
+    append_csv(a.csv, run_info(), row);
+  }
 }
 
 }  // namespace kf
