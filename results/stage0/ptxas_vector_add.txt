@@ -1,0 +1,11 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)' for 'sm_120'
+ptxas info    : Function properties for kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 9.384 ms
+ptxas info    : Compiling entry function 'vector_add(float const*, float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for vector_add(float const*, float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers
+ptxas info    : Compile time = 2.894 ms

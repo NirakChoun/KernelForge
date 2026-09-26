@@ -1,0 +1,36 @@
+function,opcode,count
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",NOP,14
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU.64,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",BRA,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",EXIT,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",ISETP.GE.U64.AND,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",S2R,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UMOV,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",HFMA2,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IADD.64,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IMAD.WIDE.U32,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDC,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA.HI.X,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LOP3.LUT,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",STG.E,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIADD3,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIMAD.WIDE.U32,1
+"vector_add(float const*, float const*, float*, unsigned long)",NOP,9
+"vector_add(float const*, float const*, float*, unsigned long)",IADD.64,3
+"vector_add(float const*, float const*, float*, unsigned long)",LDCU.64,3
+"vector_add(float const*, float const*, float*, unsigned long)",EXIT,2
+"vector_add(float const*, float const*, float*, unsigned long)",LDC,2
+"vector_add(float const*, float const*, float*, unsigned long)",LDG.E.CONSTANT,2
+"vector_add(float const*, float const*, float*, unsigned long)",BRA,1
+"vector_add(float const*, float const*, float*, unsigned long)",FADD,1
+"vector_add(float const*, float const*, float*, unsigned long)",HFMA2,1
+"vector_add(float const*, float const*, float*, unsigned long)",IMAD.SHL.U32,1
+"vector_add(float const*, float const*, float*, unsigned long)",IMAD.WIDE.U32,1
+"vector_add(float const*, float const*, float*, unsigned long)",ISETP.GE.U64.AND,1
+"vector_add(float const*, float const*, float*, unsigned long)",LDCU.128,1
+"vector_add(float const*, float const*, float*, unsigned long)",S2R,1
+"vector_add(float const*, float const*, float*, unsigned long)",S2UR,1
+"vector_add(float const*, float const*, float*, unsigned long)",SHF.L.U64.HI,1
+"vector_add(float const*, float const*, float*, unsigned long)",STG.E,1
