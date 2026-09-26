@@ -79,6 +79,30 @@ __global__ void reduce_warp_shuffle(const float* __restrict__ in, float* __restr
   }
 }
 
+// Block sum with warp shuffles; result valid in thread 0.
+__device__ float block_sum(float v) {
+  __shared__ float warp_sums[kBlock / 32];
+  const unsigned lane = threadIdx.x & 31, warp = threadIdx.x >> 5;
+  for (int off = 16; off > 0; off >>= 1) v += __shfl_down_sync(kFullMask, v, off);
+  if (lane == 0) warp_sums[warp] = v;
+  __syncthreads();
+  if (warp == 0) {
+    v = lane < kBlock / 32 ? warp_sums[lane] : 0.0f;
+    for (int off = 16; off > 0; off >>= 1) v += __shfl_down_sync(kFullMask, v, off);
+  }
+  return v;
+}
+
+// v6: fixed grid sized to fill the GPU; each thread accumulates many elements with a
+// grid-stride loop, then one block sum. A second single-block launch sums the partials.
+__global__ void reduce_grid_stride(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  float v = 0.0f;
+  const size_t step = static_cast<size_t>(gridDim.x) * kBlock;
+  for (size_t i = static_cast<size_t>(blockIdx.x) * kBlock + threadIdx.x; i < n; i += step) v += in[i];
+  v = block_sum(v);
+  if (threadIdx.x == 0) out[blockIdx.x] = v;
+}
+
 struct Plan {
   std::string name, variant = "-", grid = "-", block = "-";
   kf::KernelInfo ki;
@@ -145,6 +169,25 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
     case 3: return tiled_plan("v3_sequential", reduce_sequential, kBlock, in, n, a, b, result);
     case 4: return tiled_plan("v4_first_add", reduce_first_add, 2 * kBlock, in, n, a, b, result);
     case 5: return tiled_plan("v5_warp_shuffle", reduce_warp_shuffle, 2 * kBlock, in, n, a, b, result);
+    case 6: {
+      Plan p;
+      p.name = "v6_grid_stride";
+      p.ki = kf::kernel_info(reduce_grid_stride, kBlock);
+      int dev = 0, sms = 0;
+      CUDA_CHECK(cudaGetDevice(&dev));
+      CUDA_CHECK(cudaDeviceGetAttribute(&sms, cudaDevAttrMultiProcessorCount, dev));
+      // One full wave of resident blocks, fewer if n is small.
+      const size_t full = static_cast<size_t>(p.ki.blocks_per_sm) * sms;
+      const unsigned grid = static_cast<unsigned>(std::min(full, (n + kBlock - 1) / kBlock));
+      p.variant = "passes=2";
+      p.grid = std::to_string(grid);
+      p.block = std::to_string(kBlock);
+      p.run = [=] {
+        reduce_grid_stride<<<grid, kBlock>>>(in, a, n);
+        reduce_grid_stride<<<1, kBlock>>>(a, result, grid);
+      };
+      return p;
+    }
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
