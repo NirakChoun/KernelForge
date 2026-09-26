@@ -126,7 +126,37 @@ def stage1():
     save(fig, RES / "stage1" / "patterns.png")
 
 
-STAGES = {"0": stage0, "1": stage1}
+def stage2():
+    df = pd.read_csv(RES / "stage2" / "reduce.csv")
+    pow2 = df[(df.n & (df.n - 1)) == 0]
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for kernel, g in pow2.groupby("kernel"):
+        g = g.sort_values("n")
+        ax.plot(g.n, g.metric_value, marker="o", ms=4, label=kernel)
+    ceilings(ax)
+    ax.set_xscale("log", base=2)
+    ax.set_yscale("log")
+    ax.set_xlabel("elements (float)")
+    ax.set_ylabel("effective bandwidth, input bytes / time (GB/s)")
+    ax.set_title("Stage 2: reduction versions, L2 flushed", fontsize=10)
+    ax.legend(fontsize=7, loc="lower right")
+    save(fig, RES / "stage2" / "reduce_bandwidth.png")
+
+    big = df[df.n == df.n.max()].sort_values("kernel")
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    pct = 100 * big.metric_value / ACHIEVABLE_GBS
+    ax.bar(range(len(big)), pct, color="tab:blue")
+    for i, (v, p) in enumerate(zip(big.metric_value, pct)):
+        ax.text(i, p * 1.1, f"{v:.1f} GB/s", ha="center", fontsize=7)
+    ax.set_xticks(range(len(big)))
+    ax.set_xticklabels(big.kernel, fontsize=7, rotation=15)
+    ax.set_yscale("log")
+    ax.set_ylabel("% of achievable 1530 GB/s")
+    ax.set_title(f"Stage 2: reduction at n = {int(big.n.iloc[0])}, L2 flushed", fontsize=10)
+    save(fig, RES / "stage2" / "reduce_largest.png")
+
+
+STAGES = {"0": stage0, "1": stage1, "2": stage2}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or any(a not in STAGES for a in sys.argv[1:]):
