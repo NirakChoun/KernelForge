@@ -25,6 +25,7 @@ target_include_directories(kf_common INTERFACE ${CMAKE_SOURCE_DIR}/include)
 target_compile_options(kf_common INTERFACE
   $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra>
   $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo -Xcompiler=-Wall,-Wextra>)
+target_compile_definitions(kf_common INTERFACE KF_BUILD_TYPE="${CMAKE_BUILD_TYPE}")
 
 add_executable(device_info src/device_info.cu)
 target_link_libraries(device_info PRIVATE kf_common)
