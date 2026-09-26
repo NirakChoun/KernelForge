@@ -4,13 +4,16 @@
 
 For FP32 matmul and row softmax on the RTX PRO 6000 Blackwell Max-Q, at which shapes does Triton's generated code match or beat the hand-written CUDA kernels of Stages 3 and 8 (and cuBLAS), and which differences in the generated code, resources, and chosen configuration account for the result?
 
-Starting point (Stage 7, job 24047985): Triton matmul at 94.1% of cuBLAS at 4096, hand-written v6 at 73.6%.
+Starting point (Stage 7): Triton matmul at 94.1% of cuBLAS at 4096, hand-written v6 at 73.6%.
 
 ## Method
+
+One job runs autotuned Triton, cuBLAS (two paths), and the hand-written CUDA kernels at every shape, with fixed-config Triton ablations, clock logging, and static analysis of every compiled kernel.
 
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 188 SMs, `high`, job 24049608, 2026-09-26 |
+| Stage 7 reference | job 24047985 |
 | Software | PyTorch 2.14.0+cu130, Triton 3.8.0; CUDA kernels CUDA 13.3, Release, sm_120 |
 | Run | `sbatch --mem=64G --time=01:30:00 scripts/run_gpu.sh scripts/stage10_capstone.sh` (driver `python/stage10_capstone.py`), 4 min 22 s |
 | Matmul kernels | Triton `matmul_kernel` autotuned over the 12-entry `MATMUL_SPACE`; cuBLAS through `torch.matmul` (TF32 off); `build/sgemm` versions 0 (`cublasSgemm`), 6 (128x128x8x8x8, float4 when K and N are multiples of 4), 5 (128x128x16x8x8) |
@@ -25,6 +28,8 @@ Starting point (Stage 7, job 24047985): Triton matmul at 94.1% of cuBLAS at 4096
 Correctness: every Triton matmul (13 autotuned, 18 fixed) passed the Stage 3 criterion |c - ref| <= 16 sqrt(K) 2^-24 (|A||B|)_ij against FP64; every `build/sgemm` run passed kernel-vs-cuBLAS (and CPU where M N K <= 2^30); every softmax passed |y - ref| <= 1e-7 + 1e-5 |ref| against FP64. 120 checks, 0 failures.
 
 ## Results
+
+Triton leads hand-written v6 at every matmul shape in raw GFLOP/s; at the small shapes its autotuned tiles give more blocks than v6's for the 188 SMs. Per clock it leads cuBLAS only at 512 and 777 x 1111 x 333, and at the square shapes 1000, 3000, and 4097, whose dimensions are not multiples of 16, it falls further behind cuBLAS than at 1024 and 4096. For softmax, Triton is faster than the CUDA kernel at every row length.
 
 ### Matmul, autotuned Triton vs CUDA and cuBLAS
 
@@ -63,8 +68,6 @@ Same runs as % of the peak at each run's median clock:
 | 777 x 1111 x 333 | 11.8 | 13.4 | 16.6 | 7.4 | 6.3 | 2.26 | 2.26 | 1.41 |
 | 1000 x 3000 x 2000 | 48.1 | 52.6 | 36.1 | 23.4 | 17.8 | 1.63 | 1.54 | 0.75 |
 | 4096 x 4096 x 1000 | 45.8 | 57.5 | 36.7 | 40.8 | 26.6 | 1.12 | 0.90 | 0.80 |
-
-At 8192 every run was at the 300 W limit (median power 300.0 W, 30 to 46 active samples); at 6144 the runs were at 219.6 to 300.4 W; at the other shapes the runs had 5 to 49 active samples (most below 25) at 107 to 307 W median power.
 
 ### Grid size against SM count
 
@@ -145,6 +148,8 @@ Memory clock was 13365 MHz in every softmax run. The CUDA kernel reads each row 
 
 ## Observations
 
+The matmul results differ by shape class: small grids, large square shapes, and shapes with a dimension that is not a multiple of 16.
+
 1. Triton beats hand-written v6 at all 13 shapes in raw GFLOP/s (1.06x to 5.98x) and at 12 of 13 per clock; the exception per clock is 4096 x 4096 x 1000 (0.90).
 2. Triton beats `cublasSgemm` in raw GFLOP/s at 512 (134.8%), 1024 (107.9%), 1536 (120.8%), 777 x 1111 x 333 (142.1%), and 1000 x 3000 x 2000 (105.6%). Per clock it is ahead only at 512 (1.35) and 777 x 1111 x 333 (1.41); at 1024, 1536, and 1000 x 3000 x 2000 the Triton runs had a median SM clock 375 to 675 MHz higher than the cuBLAS runs.
 3. At the shapes where v6 is furthest behind (512, 1000, 1024, 777 x 1111 x 333) its 128 x 128 tiles give 16 to 64 blocks for 188 SMs (0.04 to 0.17 waves). Triton's chosen tiles give 128 to 234 blocks (0.34 to 0.68 waves).
@@ -166,13 +171,17 @@ Memory clock was 13365 MHz in every softmax run. The CUDA kernel reads each row 
 
 ## Limitations
 
-- Clocks: the card is power-limited at 300 W and the SM clock varied from 1425 to 2347 MHz across runs. Most runs below 8192 have 5 to 24 samples at 100 ms, and the median includes the 0.5 s sustain phase. The Python sustain loop synchronizes every 16 launches and `kfbench` inserts a spin kernel before each rep, while `build/sgemm` runs its reps back to back, so the duty cycle and power differ between Triton, `torch.matmul`, and `build/sgemm` runs. Per-clock values below 8192 carry that uncertainty; within-run min and max clocks are in `clock_summary.csv`.
+The main limitation is the varying SM clock; per-clock comparisons are reliable only at 8192.
+
+- Clocks: the card is power-limited at 300 W and the SM clock varied from 1425 to 2347 MHz across runs. At 8192 every run was at the 300 W limit (median power 300.0 W, 30 to 46 active samples); at 6144 the runs were at 219.6 to 300.4 W; at the other shapes the runs had 5 to 49 active samples at 100 ms (most below 25) at 107 to 307 W median power. The median includes the 0.5 s sustain phase. The Python sustain loop synchronizes every 16 launches and `kfbench` inserts a spin kernel before each rep, while `build/sgemm` runs its reps back to back, so the duty cycle and power differ between Triton, `torch.matmul`, and `build/sgemm` runs. Per-clock values below 8192 carry that uncertainty; within-run min and max clocks are in `clock_summary.csv`.
 - The ablation compares configurations one run each; differences under about 15% in clock-adjusted terms are within the min-to-max clock span of the runs.
 - SASS counts are static. Executed instruction counts, achieved occupancy, stall reasons, bank conflicts, and DRAM bytes need Nsight Compute counters, which are denied on every Hive node probed.
 - One GPU, one driver (580.167.08), one Triton version. The Triton search space is 12 configurations; a larger space could change the small-shape results.
 - cuBLAS kernel names per shape were not recorded in this job; Stage 3 identified the SIMT kernel only at 4096 and 8192.
 
 ## Open questions
+
+The open items are the two cuBLAS paths, autotuning under a varying clock, and three shape- or config-specific results.
 
 1. Per clock, `torch.matmul` is ahead of `cublasSgemm` from `build/sgemm` at most shapes (for example 57.5% vs 45.8% at 4096 x 4096 x 1000) although both are cuBLAS FP32. Different kernel selection or different clocks within the run; not checked with Nsight Systems.
 2. The 64 x 64 x 32 configuration at 4096 has the highest clock-adjusted value in the ablation (48.1%, 3 blocks per SM) but the autotuner timed it slower. Autotuning is on raw time, which includes the clock at that moment.
