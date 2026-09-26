@@ -36,6 +36,12 @@ Stage 0:
 
 Expected if there were no L2 reuse: 128 MiB read (134217728 B), 64 MiB write (67108864 B).
 
+Stage 1 (sectors per request and DRAM bytes; `--section MemoryWorkloadAnalysis` as the brief asks, plus explicit metrics):
+
+3. Contiguous: `sbatch -p low --gpus=6000_blackwell:1 --mem=16G --time=00:10:00 scripts/run_gpu.sh ncu -k regex:^contiguous$ --launch-skip 10 --launch-count 1 --section MemoryWorkloadAnalysis --metrics l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum,dram__bytes_read.sum,dram__bytes_write.sum ./build/mem_patterns 268435456 --pattern contiguous --no-csv`
+4. Strided, one run per stride S in 2, 4, 8, 64: the command above with `-k regex:^strided$` and `--pattern strided --stride S`.
+5. Gather and aos_x: the command above with `-k regex:^gather$ ... --pattern gather` and `-k regex:^aos_x$ ... 67108864 --pattern aos_x`.
+
 ## Stage 0 report
 
 Commits (oldest first):
@@ -74,3 +80,33 @@ Achievable bandwidth for later stages: about 1530 GB/s (flushed vector_add, 1 to
 Failures: ncu counter access denied (above). No correctness failures.
 
 Open questions (details in `docs/stage0.md`): L2 residency as the cause of warm results above nominal; cold timings near multiples of 1.024 us; batched per-launch times on about 2.05 us steps and above the nsys kernel duration at small sizes (launch-rate question, not pursued); memcpy_d2d warm peak of 5573.8 GB/s; copy plateau below vector_add.
+
+## Stage 1 report
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 021e2ef | stage1: add memory access pattern kernels with exact checks |
+| 4d8f802 | stage1: add access pattern run script |
+| 364efe8 | stage1: add stage 1 plots to plot script |
+| 207f0a8 | stage1: add access pattern results, plots, and ptxas/sass reports |
+| b9577c6 | stage1: add stage 1 doc |
+
+Headline results (2^28 uint32 elements, L2 flushed, job 24037839, % of 1530 GB/s achievable):
+
+| Pattern | Effective GB/s | % achievable |
+|---|---|---|
+| contiguous | 1493.7 | 97.6 |
+| strided, stride 2 | 1019.0 | 66.6 |
+| strided, stride 4 | 621.0 | 40.6 |
+| strided, stride 8 / 16 / 32 | 352.2 / 355.9 / 353.6 | 23.0 / 23.3 / 23.1 |
+| strided, stride 64 | 250.1 | 16.3 |
+| gather, random permutation | 180.5 | 11.8 |
+| offset 1 to 31 | 1485.2 | 97.1 |
+| aos_x / soa_x | 618.3 / 1489.5 | 40.4 / 97.4 |
+| aos_sum / soa_sum | 1549.3 / 1549.3 | 101.3 / 101.3 |
+
+Failures: none. ncu profiling of contiguous and strided cases not possible (counter access); commands under Pending profiling.
+
+Open questions (details in `docs/stage1.md`): stride curve vs sector over-fetch; stride 64 below stride 32; gather limited by sector efficiency or latency; identical cost for all offsets 1 to 31; 4:1 read-to-write kernels above copy bandwidth; aos_x DRAM bytes.
