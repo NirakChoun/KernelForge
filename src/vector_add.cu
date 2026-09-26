@@ -17,7 +17,7 @@ __global__ void vector_add(const float* __restrict__ a, const float* __restrict_
 }
 
 static void usage(const char* prog) {
-  std::fprintf(stderr, "usage: %s <n> [--flush] [--csv PATH | --no-csv]\n", prog);
+  std::fprintf(stderr, "usage: %s <n> [--flush | --launches K] [--csv PATH | --no-csv]\n", prog);
   std::exit(2);
 }
 
@@ -27,11 +27,19 @@ int main(int argc, char** argv) {
   if (n == 0) usage(argv[0]);
   std::string csv_path = "results/stage0/vector_add.csv";
   bool flush = false;
+  int launches = 1;
   for (int i = 2; i < argc; ++i) {
     if (!std::strcmp(argv[i], "--csv") && i + 1 < argc) csv_path = argv[++i];
     else if (!std::strcmp(argv[i], "--no-csv")) csv_path.clear();
     else if (!std::strcmp(argv[i], "--flush")) flush = true;
+    else if (!std::strcmp(argv[i], "--launches") && i + 1 < argc) launches = std::atoi(argv[++i]);
     else usage(argv[0]);
+  }
+  if (launches < 1) usage(argv[0]);
+  if (flush && launches > 1) {
+    // Only the first launch of each rep would be cold, so the result would be neither.
+    std::fprintf(stderr, "--flush requires --launches 1\n");
+    return 2;
   }
 
   constexpr int kBlock = 256;
@@ -86,6 +94,7 @@ int main(int argc, char** argv) {
     kf::TimeOptions opt;
     opt.warmup = kWarmup;
     opt.reps = kReps;
+    opt.launches_per_rep = launches;
     opt.flush = flush ? &flusher : nullptr;
     auto times = kf::time_gpu([&] { vector_add<<<grid, kBlock>>>(d_a, d_b, d_c, n); }, opt);
     const kf::Stats s = kf::summarize(times);
@@ -96,6 +105,7 @@ int main(int argc, char** argv) {
     row.bytes = 3 * bytes;  // two reads and one write per element
     row.grid = grid;
     row.block = kBlock;
+    row.launches_per_rep = launches;
     row.l2_flush = flush;
     row.warmup = kWarmup;
     row.reps = kReps;
@@ -104,9 +114,9 @@ int main(int argc, char** argv) {
     row.stddev_ms = s.stddev_ms;
     row.metric_value = row.bytes / (s.median_ms * 1e-3) / 1e9;
     row.metric_unit = "GB/s";
-    row.launch_bound = s.median_ms < 0.020;
-    std::printf("l2_flush=%d warmup=%d reps=%d median_ms=%.6f min_ms=%.6f stddev_ms=%.6f bandwidth_GBps=%.1f\n",
-                flush ? 1 : 0, kWarmup, kReps, s.median_ms, s.min_ms, s.stddev_ms, row.metric_value);
+    row.launch_bound = s.median_ms < 0.020;  // per-launch median under 20 us
+    std::printf("launches_per_rep=%d l2_flush=%d warmup=%d reps=%d median_ms=%.6f min_ms=%.6f stddev_ms=%.6f bandwidth_GBps=%.1f launch_bound=%d\n",
+                launches, flush ? 1 : 0, kWarmup, kReps, s.median_ms, s.min_ms, s.stddev_ms, row.metric_value, row.launch_bound ? 1 : 0);
     if (!csv_path.empty()) {
       kf::append_csv(csv_path, kf::run_info(), row);
       std::printf("csv: appended to %s\n", csv_path.c_str());

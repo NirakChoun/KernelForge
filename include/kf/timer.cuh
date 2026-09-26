@@ -62,12 +62,16 @@ class L2Flush {
 struct TimeOptions {
   int warmup = 10;
   int reps = 100;
+  // fn() calls between one event pair. Returned times are divided by this, so they
+  // are per launch. Use > 1 when a single launch is too short to time reliably.
+  int launches_per_rep = 1;
   const L2Flush* flush = nullptr;  // if set, runs before each rep, outside the timed region
   cudaStream_t stream = 0;
 };
 
 // Times fn() on the GPU using CUDA events. fn must enqueue its work on opt.stream.
-// Warm-up runs are executed but not recorded.
+// Warm-up runs are executed but not recorded. With flush and launches_per_rep > 1,
+// only the first launch of each rep starts with a cold L2.
 template <typename F>
 std::vector<float> time_gpu(F&& fn, const TimeOptions& opt) {
   cudaEvent_t start, stop;
@@ -82,10 +86,11 @@ std::vector<float> time_gpu(F&& fn, const TimeOptions& opt) {
     // Stream order guarantees the flush finishes before the start event.
     if (opt.flush) (*opt.flush)(opt.stream);
     CUDA_CHECK(cudaEventRecord(start, opt.stream));
-    fn();
+    for (int k = 0; k < opt.launches_per_rep; ++k) fn();
     CUDA_CHECK(cudaEventRecord(stop, opt.stream));
     CUDA_CHECK(cudaEventSynchronize(stop));
     CUDA_CHECK(cudaEventElapsedTime(&times[i], start, stop));
+    times[i] /= opt.launches_per_rep;
   }
   CUDA_CHECK(cudaGetLastError());
 
