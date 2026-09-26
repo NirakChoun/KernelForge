@@ -27,8 +27,16 @@ target_compile_options(kf_common INTERFACE
   $<$<COMPILE_LANGUAGE:CUDA>:-lineinfo -Xcompiler=-Wall,-Wextra>)
 target_compile_definitions(kf_common INTERFACE KF_BUILD_TYPE="${CMAKE_BUILD_TYPE}")
 
-add_executable(device_info src/device_info.cu)
-target_link_libraries(device_info PRIVATE kf_common)
+# Print per-kernel registers, spills, and shared memory at compile time.
+option(KF_PTXAS_VERBOSE "Pass -Xptxas -v to nvcc" OFF)
+if(KF_PTXAS_VERBOSE)
+  target_compile_options(kf_common INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:-Xptxas=-v>)
+endif()
 
-add_executable(vector_add src/vector_add.cu)
-target_link_libraries(vector_add PRIVATE kf_common)
+function(kf_add_bench name)
+  add_executable(${name} ${ARGN})
+  target_link_libraries(${name} PRIVATE kf_common)
+endfunction()
+
+kf_add_bench(device_info src/device_info.cu)
+kf_add_bench(vector_add src/vector_add.cu)

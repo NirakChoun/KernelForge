@@ -1,59 +1,33 @@
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <random>
-#include <string>
 #include <vector>
-#include "kf/csv.hpp"
-#include "kf/cuda_check.cuh"
-#include "kf/timer.cuh"
+#include "kf/bench.cuh"
+#include "kf/check.hpp"
 
 __global__ void vector_add(const float* __restrict__ a, const float* __restrict__ b,
                            float* __restrict__ c, size_t n) {
-  // size_t index: n up to 2 GiB of data later in Stage 0 overflows int arithmetic.
+  // size_t index: n up to 2 GiB of data overflows int arithmetic.
   const size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
   if (i < n) c[i] = a[i] + b[i];
 }
 
-static void usage(const char* prog) {
-  std::fprintf(stderr, "usage: %s <n> [--flush | --launches K] [--csv PATH | --no-csv]\n", prog);
-  std::exit(2);
-}
-
 int main(int argc, char** argv) {
-  if (argc < 2) usage(argv[0]);
-  const size_t n = std::strtoull(argv[1], nullptr, 10);
-  if (n == 0) usage(argv[0]);
-  std::string csv_path = "results/stage0/vector_add.csv";
-  bool flush = false;
-  int launches = 1;
-  for (int i = 2; i < argc; ++i) {
-    if (!std::strcmp(argv[i], "--csv") && i + 1 < argc) csv_path = argv[++i];
-    else if (!std::strcmp(argv[i], "--no-csv")) csv_path.clear();
-    else if (!std::strcmp(argv[i], "--flush")) flush = true;
-    else if (!std::strcmp(argv[i], "--launches") && i + 1 < argc) launches = std::atoi(argv[++i]);
-    else usage(argv[0]);
-  }
-  if (launches < 1) usage(argv[0]);
-  if (flush && launches > 1) {
-    // Only the first launch of each rep would be cold, so the result would be neither.
-    std::fprintf(stderr, "--flush requires --launches 1\n");
+  const kf::BenchArgs args = kf::parse_bench_args(argc, argv, "results/stage0/vector_add.csv");
+  if (!args.rest.empty()) {
+    std::fprintf(stderr, "unknown argument: %s\n", args.rest[0].c_str());
     return 2;
   }
-
+  const size_t n = args.n;
   constexpr int kBlock = 256;
-  constexpr int kWarmup = 10;
-  constexpr int kReps = 100;
   const unsigned grid = static_cast<unsigned>((n + kBlock - 1) / kBlock);
   const size_t bytes = n * sizeof(float);
 
-  std::vector<float> h_a(n), h_b(n), h_c(n);
+  std::vector<float> h_a(n), h_b(n), h_c(n), ref(n);
   std::mt19937 rng(12345);
   std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
   for (size_t i = 0; i < n; ++i) {
     h_a[i] = dist(rng);
     h_b[i] = dist(rng);
+    ref[i] = h_a[i] + h_b[i];
   }
 
   float *d_a, *d_b, *d_c;
@@ -72,59 +46,24 @@ int main(int argc, char** argv) {
 
   // A single float add is correctly rounded on both sides, so results should match
   // exactly; the tolerance only guards against compiler contraction differences.
-  size_t errors = 0;
-  double max_err = 0.0;
-  for (size_t i = 0; i < n; ++i) {
-    const float ref = h_a[i] + h_b[i];
-    const double err = std::fabs(static_cast<double>(h_c[i]) - ref);
-    if (!(err <= 1e-6 * std::fabs(ref) + 1e-7)) {  // !(<=) also catches NaN
-      if (errors < 5)
-        std::fprintf(stderr, "mismatch at %zu: got %.9g expected %.9g\n", i, h_c[i], ref);
-      ++errors;
-    }
-    if (err > max_err) max_err = err;
-  }
-  const bool pass = errors == 0;
+  const kf::CheckResult c = kf::check_close(h_c, ref, 1e-6, 1e-7, "vector_add");
   std::printf("n=%zu block=%d grid=%u\n", n, kBlock, grid);
-  std::printf("correctness: %s (errors=%zu, max_abs_err=%.3g)\n", pass ? "PASS" : "FAIL",
-              errors, max_err);
+  kf::print_check("vector_add", c);
 
-  if (pass) {
-    kf::L2Flush flusher;
-    kf::TimeOptions opt;
-    opt.warmup = kWarmup;
-    opt.reps = kReps;
-    opt.launches_per_rep = launches;
-    opt.flush = flush ? &flusher : nullptr;
-    auto times = kf::time_gpu([&] { vector_add<<<grid, kBlock>>>(d_a, d_b, d_c, n); }, opt);
-    const kf::Stats s = kf::summarize(times);
-
-    kf::ResultRow row;
-    row.kernel = "vector_add";
-    row.n = n;
-    row.bytes = 3 * bytes;  // two reads and one write per element
-    row.grid = grid;
-    row.block = kBlock;
-    row.launches_per_rep = launches;
-    row.l2_flush = flush;
-    row.warmup = kWarmup;
-    row.reps = kReps;
-    row.median_ms = s.median_ms;
-    row.min_ms = s.min_ms;
-    row.stddev_ms = s.stddev_ms;
-    row.metric_value = row.bytes / (s.median_ms * 1e-3) / 1e9;
-    row.metric_unit = "GB/s";
-    row.launch_bound = s.median_ms < 0.020;  // per-launch median under 20 us
-    std::printf("launches_per_rep=%d l2_flush=%d warmup=%d reps=%d median_ms=%.6f min_ms=%.6f stddev_ms=%.6f bandwidth_GBps=%.1f launch_bound=%d\n",
-                launches, flush ? 1 : 0, kWarmup, kReps, s.median_ms, s.min_ms, s.stddev_ms, row.metric_value, row.launch_bound ? 1 : 0);
-    if (!csv_path.empty()) {
-      kf::append_csv(csv_path, kf::run_info(), row);
-      std::printf("csv: appended to %s\n", csv_path.c_str());
-    }
+  if (c.pass()) {
+    kf::Record r;
+    r.kernel = "vector_add";
+    r.n = n;
+    r.bytes = 3.0 * bytes;  // two reads and one write per element
+    r.grid = std::to_string(grid);
+    r.block = std::to_string(kBlock);
+    r.ki = kf::kernel_info(vector_add, kBlock);
+    r.s = kf::bench([&] { vector_add<<<grid, kBlock>>>(d_a, d_b, d_c, n); }, args);
+    kf::report(r, args);
   }
 
   CUDA_CHECK(cudaFree(d_a));
   CUDA_CHECK(cudaFree(d_b));
   CUDA_CHECK(cudaFree(d_c));
-  return pass ? 0 : 1;
+  return c.pass() ? 0 : 1;
 }
