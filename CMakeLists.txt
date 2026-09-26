@@ -28,3 +28,6 @@ target_compile_options(kf_common INTERFACE
 
 add_executable(device_info src/device_info.cu)
 target_link_libraries(device_info PRIVATE kf_common)
+
+add_executable(vector_add src/vector_add.cu)
+target_link_libraries(vector_add PRIVATE kf_common)
