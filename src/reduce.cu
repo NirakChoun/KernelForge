@@ -15,12 +15,65 @@ __global__ void reduce_atomic(const float* __restrict__ in, float* __restrict__ 
   if (i < n) atomicAdd(out, in[i]);
 }
 
+// v2: shared-memory tree, interleaved addressing. Active threads are those with
+// tid % (2 * stride) == 0, so every warp stays partly active until the last steps.
+__global__ void reduce_interleaved(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  __shared__ float s[kBlock];
+  const unsigned tid = threadIdx.x;
+  const size_t i = static_cast<size_t>(blockIdx.x) * kBlock + tid;
+  s[tid] = i < n ? in[i] : 0.0f;
+  __syncthreads();
+  for (unsigned stride = 1; stride < kBlock; stride *= 2) {
+    if (tid % (2 * stride) == 0) s[tid] += s[tid + stride];
+    __syncthreads();
+  }
+  if (tid == 0) out[blockIdx.x] = s[0];
+}
+
 struct Plan {
   std::string name, variant = "-", grid = "-", block = "-";
   kf::KernelInfo ki;
   std::function<void()> run;
 };
 
+// Repeats a block-per-tile kernel until one value remains. Each pass turns m values
+// into ceil(m / per_block) partial sums, alternating between two scratch buffers; the
+// last pass writes the result.
+template <typename K>
+static void multipass(K kernel, size_t per_block, const float* in, size_t n, float* a, float* b,
+                      float* result) {
+  const float* src = in;
+  size_t m = n;
+  float* dst = a;
+  while (true) {
+    const size_t blocks = (m + per_block - 1) / per_block;
+    float* out = blocks == 1 ? result : dst;
+    kernel<<<static_cast<unsigned>(blocks), kBlock>>>(src, out, m);
+    if (blocks == 1) break;
+    src = out;
+    m = blocks;
+    dst = dst == a ? b : a;
+  }
+}
+
+static int count_passes(size_t n, size_t per_block) {
+  int p = 1;
+  for (size_t m = (n + per_block - 1) / per_block; m > 1; m = (m + per_block - 1) / per_block) ++p;
+  return p;
+}
+
+template <typename K>
+static Plan tiled_plan(const char* name, K kernel, size_t per_block, const float* in, size_t n,
+                       float* a, float* b, float* result) {
+  Plan p;
+  p.name = name;
+  p.variant = "passes=" + std::to_string(count_passes(n, per_block));
+  p.grid = std::to_string((n + per_block - 1) / per_block);
+  p.block = std::to_string(kBlock);
+  p.ki = kf::kernel_info(kernel, kBlock);
+  p.run = [=] { multipass(kernel, per_block, in, n, a, b, result); };
+  return p;
+}
 
 static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] float* a,
                       [[maybe_unused]] float* b, float* result) {
@@ -39,6 +92,7 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
       };
       return p;
     }
+    case 2: return tiled_plan("v2_interleaved", reduce_interleaved, kBlock, in, n, a, b, result);
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
