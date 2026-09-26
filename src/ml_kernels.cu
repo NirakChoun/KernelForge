@@ -175,4 +175,18 @@ int kf_ml_attrs(int which, int* regs, int* local, int* smem) {
   }
 }
 
+// Resident blocks per SM from the CUDA occupancy API at the block size used for cols.
+int kf_ml_occupancy(int which, int cols, int* blocks_per_sm) {
+  const int t = threads_for(cols);
+  cudaError_t e;
+  switch (which) {
+    case 0: e = cudaOccupancyMaxActiveBlocksPerMultiprocessor(blocks_per_sm, softmax_rows<true>, t, 0); break;
+    case 1: e = cudaOccupancyMaxActiveBlocksPerMultiprocessor(blocks_per_sm, softmax_rows<false>, t, 0); break;
+    case 2: e = cudaOccupancyMaxActiveBlocksPerMultiprocessor(blocks_per_sm, rmsnorm_rows<true>, t, 0); break;
+    case 3: e = cudaOccupancyMaxActiveBlocksPerMultiprocessor(blocks_per_sm, rmsnorm_rows<false>, t, 0); break;
+    default: return -1;
+  }
+  return static_cast<int>(e);
+}
+
 }  // extern "C"
