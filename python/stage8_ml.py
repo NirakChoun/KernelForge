@@ -24,7 +24,7 @@ from triton_kernels import rmsnorm_kernel, softmax_kernel  # noqa: E402
 
 EPS = 1e-6
 TOTAL = 1 << 26
-DEFAULT_COLS = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 1000, 3000, 5000]
+DEFAULT_COLS = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 1000, 3000, 5000, 1001, 4099]
 BUILD = f"torch-{torch.__version__}+triton-{triton.__version__}"
 
 lib = ctypes.CDLL(str(kfbench.ROOT / "build" / "libkf_ml.so"))
