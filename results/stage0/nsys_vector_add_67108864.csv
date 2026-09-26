@@ -1,0 +1,2 @@
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+100.0,57942053,111,522000.5,522114.0,484929,526530,3735.4,"vector_add(const float *, const float *, float *, unsigned long)"
