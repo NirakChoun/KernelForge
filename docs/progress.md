@@ -42,6 +42,12 @@ Stage 1 (sectors per request and DRAM bytes; `--section MemoryWorkloadAnalysis` 
 4. Strided, one run per stride S in 2, 4, 8, 64: the command above with `-k regex:^strided$` and `--pattern strided --stride S`.
 5. Gather and aos_x: the command above with `-k regex:^gather$ ... --pattern gather` and `-k regex:^aos_x$ ... 67108864 --pattern aos_x`.
 
+Stage 2 (warp state statistics and memory throughput for v2, v3, v5). Each run of a multi-pass version launches the kernel 4 times at 2^28 (passes), and the program runs it twice for correctness before the 10 warm-ups, so `--launch-skip 12` selects the first (full-size) pass of the second warm-up:
+
+6. v2: `sbatch -p low --gpus=6000_blackwell:1 --mem=16G --time=00:10:00 scripts/run_gpu.sh ncu -k regex:^reduce_interleaved$ --launch-skip 12 --launch-count 1 --section SpeedOfLight --section WarpStateStats --section MemoryWorkloadAnalysis --section Occupancy ./build/reduce 268435456 --version 2 --no-csv`
+7. v3: the command above with `-k regex:^reduce_sequential$` and `--version 3`.
+8. v5: the command above with `-k regex:^reduce_warp_shuffle$` and `--version 5`.
+
 ## Stage 0 report
 
 Commits (oldest first):
@@ -110,3 +116,40 @@ Headline results (2^28 uint32 elements, L2 flushed, job 24037839, % of 1530 GB/s
 Failures: none. ncu profiling of contiguous and strided cases not possible (counter access); commands under Pending profiling.
 
 Open questions (details in `docs/stage1.md`): stride curve vs sector over-fetch; stride 64 below stride 32; gather limited by sector efficiency or latency; identical cost for all offsets 1 to 31; 4:1 read-to-write kernels above copy bandwidth; aos_x DRAM bytes.
+
+## Stage 2 report
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 153059c | stage2: add reduction harness and v1 global atomicAdd reduction |
+| 70f5755 | stage2: add v2 shared-memory tree reduction with interleaved addressing |
+| 63424fc | stage2: add v3 reduction with sequential addressing |
+| 65de076 | stage2: add v4 reduction with first add during global load |
+| 4cb46ca | stage2: add v5 reduction with warp-shuffle last warp |
+| f6b01fd | stage2: add v6 grid-stride reduction with multiple elements per thread |
+| f005b9d | stage2: add v7 cub DeviceReduce::Sum reference |
+| 22384f0 | stage2: add reduction run script |
+| f249a4b | stage2: add stage 2 plots to plot script |
+| 2261908 | stage2: add reduction results, plots, and ptxas/sass reports |
+| e45b8df | stage2: add stage 2 doc |
+Headline results (2^28 floats, L2 flushed, job 24038225):
+
+| Version | Median (ms) | GB/s | % of 1530 achievable | % of CUB |
+|---|---|---|---|---|
+| v1_atomic | 388.167694 | 2.8 | 0.2 | 0.2 |
+| v2_interleaved | 1.204224 | 891.6 | 58.3 | 58.0 |
+| v3_sequential | 1.198080 | 896.2 | 58.6 | 58.3 |
+| v4_first_add | 0.716800 | 1498.0 | 97.9 | 97.4 |
+| v5_warp_shuffle | 0.702464 | 1528.5 | 99.9 | 99.4 |
+| v6_grid_stride | 0.704544 | 1524.0 | 99.6 | 99.1 |
+| v7_cub | 0.698368 | 1537.5 | 100.5 | 100.0 |
+
+Correctness: exact integer test and float tolerance test (2 * ceil(log2 n) * 2^-24 * sum|x|) passed for all 49 configurations.
+
+Flagged (contradicts the usual expectation, recorded as measured): v2 and v3 take the same time at every size up to 2^26 and differ by 0.5% at 2^28.
+
+Failures: none. ncu profiling of v2, v3, v5 pending (counter access).
+
+Open questions (details in `docs/stage2.md`): v2 equal to v3; source of the v4 gain; same-address atomic throughput; v6 at 2^24; CUB above 1530 GB/s.
