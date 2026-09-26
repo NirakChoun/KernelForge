@@ -40,3 +40,4 @@ endfunction()
 
 kf_add_bench(device_info src/device_info.cu)
 kf_add_bench(vector_add src/vector_add.cu)
+kf_add_bench(saxpy src/saxpy.cu)
