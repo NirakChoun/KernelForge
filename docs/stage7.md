@@ -6,6 +6,8 @@ How close do autotuned Triton kernels for vector add, softmax, and FP32 matmul g
 
 ## Setup
 
+Three autotuned Triton kernels are checked against FP64 or exact references and timed with the same harness rules as the CUDA stages; the Stage 3 CUDA SGEMMs and cuBLAS run in the same job for the matmul comparison.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 188 SMs, hive-dc-7-4-58, `high` |
@@ -32,6 +34,8 @@ Correctness, before timing (all passed):
 
 ## Results
 
+Triton matmul reaches 93.2% of cuBLAS at 4096 against 73.6% for hand-written v6, and Triton vector add reaches 98.8% of achievable bandwidth. Triton's matmul uses more registers and shared memory than v6 and a cp.async pipeline.
+
 ### Vector add (`results/stage7/vector_add.csv`)
 
 | n | Autotuned config | Regs | L2 | Median (ms) | GB/s |
@@ -57,9 +61,9 @@ At 2^26 flushed, Triton vector add reaches 1512.4 GB/s, 98.8% of the 1530 GB/s a
 
 The 128 MiB working set (64 MiB in, 64 MiB out) fits in the 128 MiB L2 and the runs were warm, so these are not DRAM bandwidths. L2-flushed softmax and the CUDA comparison are in Stage 8.
 
-### Matmul (`results/stage7/matmul.csv`, `cuda_sgemm_same_job.csv`, warm, job 24047985)
+### Matmul
 
-GFLOP/s = 2 M N K / median. Percentages are of `cublasSgemm` from `build/sgemm` in the same job.
+From `results/stage7/matmul.csv` and `cuda_sgemm_same_job.csv` (job 24047985), warm. GFLOP/s = 2 M N K / median. Percentages are of `cublasSgemm` from `build/sgemm` in the same job.
 
 | Shape | cuBLAS (`build/sgemm`) | cuBLAS (`torch.matmul`) | Triton | CUDA v6 | CUDA v5 |
 |---|---|---|---|---|---|
@@ -99,6 +103,8 @@ Blocks per SM are derived from the register count and the 64K-register file; v6 
 
 ### Lowering stages for matmul at 4096 (`results/stage7/matmul_ir/`)
 
+The block-level `tt.dot` becomes a pipelined loop of cp.async copies, 128-bit shared loads, and FP32 FMAs; no MMA instruction appears at any stage.
+
 | Stage | File | Lines | What changes |
 |---|---|---|---|
 | Triton IR | `matmul_4096.ttir` | 208 | block-level `tt.load` / `tt.dot` / `tt.store` on tensors, no thread mapping |
@@ -121,6 +127,8 @@ Static SASS opcode counts (`cuobjdump -sass`, counts in the binary, not executed
 
 ## Observations
 
+Triton matmul leads v6 at every shape and reaches 92.6% to 93.2% of cuBLAS at 4096 and 8192; it falls further behind at 4097 and 1000, where its compile uses 255 registers with spill.
+
 1. Triton matmul is ahead of hand-written v6 at every shape: 1.27x at 4096, 1.22x at 8192, 2.96x at 1024, 1.06x at 4097.
 2. Triton reaches 92.6% to 93.2% of `cublasSgemm` at 4096 and 8192, 86.3% at 2048, and 104.7% at 1024.
 3. At 777 x 1111 x 333, Triton (18714.9 GFLOP/s) is 1.42x faster than `cublasSgemm` and 1.33x faster than `torch.matmul`.
@@ -140,6 +148,8 @@ Static SASS opcode counts (`cuobjdump -sass`, counts in the binary, not executed
 - Whether the 255-register, spilling compile at 4097 and 1000 explains the lower fraction of cuBLAS there.
 
 ## Open questions
+
+The open items concern the two cuBLAS paths, register growth at non-divisible shapes, and softmax at non-power-of-two rows; counter-based checks are pending counter access.
 
 1. At 1024 Triton is 4.7% faster than `cublasSgemm` from `build/sgemm` but equal to `torch.matmul` (38836.1). The two cuBLAS paths differ by 4.8% at 1024 and by less than 1.2% at 4096 and 8192. Possible different cuBLAS kernel selection through PyTorch; not checked with Nsight Systems.
 2. The 4097 and 1000 compiles use 255 registers with spill while the same configuration at 4096 uses 220. Triton specializes on argument divisibility by 16; the non-divisible shapes may take a different masking path. Not confirmed.
