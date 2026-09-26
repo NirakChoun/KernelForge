@@ -8,12 +8,12 @@ Running log of stage reports, performance counter access, and profiling that cou
 
 | GRES type | Node | Job | GPU reported | Counters |
 |---|---|---|---|---|
-| 6000_blackwell | hive-dc-7-4-58 | 24037338 | | pending (Resources) |
+| 6000_blackwell | hive-dc-7-4-58 | 24037338 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-5-58 | 24037339 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-5-62 | 24037340 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-6-54 | 24037341 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-7-58 | 24037342 | | pending (Resources) |
-| nvidia_rtx_pro_6000_blackwell_max-q_workstation_edition | (hive-as-11-2-34) | 24037343 | | pending (Resources) |
+| nvidia_rtx_pro_6000_blackwell_max-q_workstation_edition | hive-as-11-2-34 | 24037343 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | nvidia_rtx_5000_ada_generation | (hive-as-11-2-54) | 24037344 | | pending (Priority) |
 | nvidia_l40s | hive-as-11-2-58 | 24037345 | NVIDIA L40S | DENIED |
 | nvidia_a100-sxm4-80gb | hive-as-11-4-34 | 24037346 | NVIDIA A100-SXM4-80GB | DENIED |
@@ -22,7 +22,7 @@ Running log of stage reports, performance counter access, and profiling that cou
 | a6000 | hive-dc-7-5-30 | 24037349 | NVIDIA RTX A6000 | DENIED |
 | a100 | hive-dc-7-6-14 | 24037350 | NVIDIA A100 80GB PCIe | DENIED |
 
-No probed node allows counter access so far. The four pending probes (jobs 24037338, 24037342, 24037343, 24037344) were still queued on `low` at 11:32 on 2026-09-26 and are left in the queue; their result is the `PROBE_RESULT` line in `slurm-<jobid>.out`. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
+No probed node allows counter access so far. Jobs 24037338 and 24037343 ran later and were also denied. The two remaining probes (24037342, 24037344) were still queued at 14:27 on 2026-09-26 and are left in the queue; their result is the `PROBE_RESULT` line in `slurm-<jobid>.out`. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
 
 ## Pending profiling
 
@@ -200,3 +200,43 @@ Failures: none. ncu profiling of all versions pending (counter access); commands
 Open questions (details in `docs/stage3.md`): v1 at power-of-two K; v2 to v5 losing throughput from 4096 to 8192; v5 block count at small sizes; what limits high-occupancy configurations; which v6 change gives its gain; v6 with BK = 16.
 
 Stage 3 is the last stage in this run. Stages 4 to 6 (roofline and consolidation) have not been started.
+
+## Stages 4 to 6 report
+
+Also in this block: the cuBLAS FP32 verification (recorded in `docs/stage3.md`) and the Stage 1 sector-model column (in `docs/stage1.md`).
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 48dfcfe | stage3: record cublas fp32 verification results and kernel names |
+| 7de9841 | stage1: add 32-byte sector model estimate of dram bytes |
+| 5202a95 | stage1: document effective bandwidth counting and sector model comparison |
+| 71f272f | stage4: add --warmup and --reps flags with project minimums |
+| 9a0df71 | stage4: add clock and power logged sgemm and streaming run script |
+| 221fc4a | stage4: add clock log summary script |
+| c6cad16 | stage4: add first-pass mode and load-only baseline to reduction for tree-phase timing |
+| 44c894a | stage4: add reduction tree-phase run script |
+| 7d84d7b | stage4: add naive sgemm size sweep script |
+| d1a4e23 | stage4: add clock, power, and temperature logs for sgemm and streaming runs |
+| 36d668e | stage4: add reduction tree-phase and naive sgemm sweep results |
+| afbed32 | stage4: add roofline script with arithmetic intensity table |
+| 2c9b6db | stage4: add stage 4 plots to plot script |
+| 1266ef8 | stage4: add roofline table and plots |
+| 0006548 | stage4: add roofline and resource analysis doc for stages 4 to 6 |
+Headline results (details in `docs/roofline.md`):
+
+| Item | Result |
+|---|---|
+| FP32 peak | 188 SMs x 128 lanes x 2 x clock: 148.7 TFLOPS at 3090 MHz; 72.9 to 112.2 TFLOPS at the SM clocks observed under load |
+| Clocks under load | 300 W board power in every run; SM 1515 to 2332 MHz; memory 13365 MHz (max 14001); 49 to 69 C |
+| cuBLAS 8192 | 52077.8 GFLOP/s, 35.0% of peak at 3090 MHz, 71.4% of peak at its observed 1515 MHz |
+| v6 8192 | 37520.4 GFLOP/s, 25.2% at 3090 MHz, 47.5% at its observed 1642 MHz |
+| Memory-bound kernels | vector_add, saxpy, reduction v5 to v7 at 99.6% to 100.5% of the 1530 GB/s roof |
+| Occupancy | fastest tile configuration (30351.3 GFLOP/s) has the lowest theoretical occupancy (0.333) |
+| Reduction v2 vs v3 | equal even with the tree phase isolated on L2-resident data (20.500 vs 20.501 us per first pass at 2^22) |
+| Naive SGEMM | 2.9x to 3.3x slower only at exactly 1024 and 4096, not at neighbouring multiples of 8 |
+
+Failures: none. Counter probes: 6000_blackwell hive-dc-7-4-58 (job 24037338) and the Max-Q GRES type on hive-as-11-2-34 (job 24037343) also DENIED; two probes still queued.
+
+Open questions (details in `docs/roofline.md`): power cap as the cause of kernel-dependent clocks; 1710.7 GB/s as the nominal ceiling at the loaded memory clock; v2 equal to v3; load-only baseline slower than v4 and v5; power-of-two stride in v1.
