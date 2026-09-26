@@ -1,0 +1,4 @@
+gpu,job_id,date,cuda_runtime,cuda_driver,build_type,kernel,variant,n,bytes,flops,grid,block,dyn_smem,regs,local_bytes,static_smem,blocks_per_sm,theo_occupancy,launches_per_rep,l2_flush,warmup,reps,median_ms,min_ms,stddev_ms,metric_value,metric_unit,launch_bound
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition,24039707,2026-09-26T11:51:41-0700,13.3,13.0,Release,vector_add,-,178956970,2147483640,0,699051,256,0,12,0,0,6,1.000,1,0,10,3000,1.415264,1.398688,0.003651,1517.4,GB/s,0
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition,24039707,2026-09-26T11:51:47-0700,13.3,13.0,Release,copy_kernel,-,268435456,2147483648,0,1048576,256,0,8,0,0,6,1.000,1,0,10,3000,1.436880,1.431744,0.002968,1494.5,GB/s,0
+NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition,24039707,2026-09-26T11:51:52-0700,13.3,13.0,Release,v5_warp_shuffle,passes=4,268435456,1073741824,268435455,524288,256,0,14,0,1024,6,1.000,1,0,10,3000,0.689216,0.664544,0.008816,1557.9,GB/s,0
