@@ -22,7 +22,7 @@ Running log of stage reports, performance counter access, and profiling that cou
 | a6000 | hive-dc-7-5-30 | 24037349 | NVIDIA RTX A6000 | DENIED |
 | a100 | hive-dc-7-6-14 | 24037350 | NVIDIA A100 80GB PCIe | DENIED |
 
-No probed node allows counter access so far. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
+No probed node allows counter access so far. The four pending probes (jobs 24037338, 24037342, 24037343, 24037344) were still queued on `low` at 11:32 on 2026-09-26 and are left in the queue; their result is the `PROBE_RESULT` line in `slurm-<jobid>.out`. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
 
 ## Pending profiling
 
@@ -47,6 +47,12 @@ Stage 2 (warp state statistics and memory throughput for v2, v3, v5). Each run o
 6. v2: `sbatch -p low --gpus=6000_blackwell:1 --mem=16G --time=00:10:00 scripts/run_gpu.sh ncu -k regex:^reduce_interleaved$ --launch-skip 12 --launch-count 1 --section SpeedOfLight --section WarpStateStats --section MemoryWorkloadAnalysis --section Occupancy ./build/reduce 268435456 --version 2 --no-csv`
 7. v3: the command above with `-k regex:^reduce_sequential$` and `--version 3`.
 8. v5: the command above with `-k regex:^reduce_warp_shuffle$` and `--version 5`.
+
+Stage 3 (memory throughput, achieved occupancy, registers, shared memory, warp stall reasons for every version). The program runs two cuBLAS reference GEMMs, then one correctness launch and 10 warm-ups of the selected kernel, so with a name filter `--launch-skip 5` selects the fifth warm-up:
+
+9. Versions 1 to 6, one run each with V = 1..6: `sbatch -p low --gpus=6000_blackwell:1 --mem=16G --time=00:20:00 scripts/run_gpu.sh ncu -k regex:^sgemm_ --launch-skip 5 --launch-count 1 --section SpeedOfLight --section MemoryWorkloadAnalysis --section Occupancy --section LaunchStats --section WarpStateStats --section SchedulerStats ./build/sgemm 4096 --version V --no-csv`
+10. Tile sweep configurations (versions 3 to 5): the command above with `--version V --cfg C` for each configuration in `scripts/tile_sweep_stage3.sh`.
+11. cuBLAS for comparison: `... ncu --launch-skip 5 --launch-count 1 --section SpeedOfLight --section Occupancy --section LaunchStats --section WarpStateStats ./build/sgemm 4096 --version 0 --no-csv` (no name filter; every launch in this run is a cuBLAS kernel).
 
 ## Stage 0 report
 
@@ -153,3 +159,44 @@ Flagged (contradicts the usual expectation, recorded as measured): v2 and v3 tak
 Failures: none. ncu profiling of v2, v3, v5 pending (counter access).
 
 Open questions (details in `docs/stage2.md`): v2 equal to v3; source of the v4 gain; same-address atomic throughput; v6 at 2^24; CUB above 1530 GB/s.
+
+## Stage 3 report
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 1908f4e | stage3: add sgemm harness with cublas and cpu checks, and v1 naive kernel |
+| 4f5aac8 | stage3: add v2 sgemm with coalesced global access |
+| 205527b | stage3: add v3 sgemm with shared-memory tiling |
+| fbbb26a | stage3: add v4 sgemm with 1d register blocking |
+| 3d96368 | stage3: add v5 sgemm with 2d register blocking |
+| ac28db7 | stage3: add v6 sgemm with float4 vectorized loads and stores |
+| 89ebc87 | stage3: add sgemm run script |
+| c15b31d | stage3: add tile and block size sweep script |
+| d8cbda5 | stage3: add stage 3 plots to plot script |
+| 6bb25b3 | stage3: add sgemm and tile sweep results, plots, and ptxas/sass reports |
+| 89600ee | stage3: add stage 3 doc |
+Headline results (square M = N = K, warm, job 24038801; GFLOP/s and % of cuBLAS):
+
+| Version | 4096 | 8192 |
+|---|---|---|
+| cublas | 51082.8 | 51188.3 |
+| v1_naive | 824.6 (1.6%) | 832.0 (1.6%) |
+| v2_coalesced | 5768.3 (11.3%) | 4253.6 (8.3%) |
+| v3_smem_tiling | 8197.5 (16.0%) | 6944.6 (13.6%) |
+| v4_1d_regblock | 19141.1 (37.5%) | 17342.8 (33.9%) |
+| v5_2d_regblock | 23039.8 (45.1%) | 19573.3 (38.2%) |
+| v6_vectorized | 36845.6 (72.1%) | 37066.3 (72.4%) |
+
+Best tile sweep configuration at 4096 (job 24038802): v5 128x128x16x8x8, 30351.3 GFLOP/s, theoretical occupancy 0.333.
+
+Correctness: all 70 main-run configurations passed kernel-vs-cuBLAS; the 42 with M N K <= 2^30 also passed kernel-vs-CPU and cuBLAS-vs-CPU (double). Tolerance 16 sqrt(K) 2^-24 (|A||B|)_ij per element.
+
+Flagged (recorded as measured): v1 is 3.3x faster at 1023 and 4097 than at 1024 and 4096; the v5 default is slower than v4 at 1024 and 2048; the fastest tile configuration has the lowest theoretical occupancy.
+
+Failures: none. ncu profiling of all versions pending (counter access); commands under Pending profiling.
+
+Open questions (details in `docs/stage3.md`): v1 at power-of-two K; v2 to v5 losing throughput from 4096 to 8192; v5 block count at small sizes; what limits high-occupancy configurations; which v6 change gives its gain; v6 with BK = 16.
+
+Stage 3 is the last stage in this run. Stages 4 to 6 (roofline and consolidation) have not been started.
