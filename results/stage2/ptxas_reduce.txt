@@ -1,0 +1,56 @@
+ptxas info    : 61 bytes gmem
+ptxas info    : Compiling entry function 'kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)' for 'sm_120'
+ptxas info    : Function properties for kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 6.443 ms
+ptxas info    : Compiling entry function 'void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceSingleTileKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float*, float*, int, cuda::std::__4::plus<void>, float, float, cuda::std::__4::identity>(float*, float*, int, cuda::std::__4::plus<void>, float, cuda::std::__4::identity)' for 'sm_120'
+ptxas info    : Function properties for void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceSingleTileKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float*, float*, int, cuda::std::__4::plus<void>, float, float, cuda::std::__4::identity>(float*, float*, int, cuda::std::__4::plus<void>, float, cuda::std::__4::identity)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, used 1 barriers, 44 bytes smem
+ptxas info    : Compile time = 74.049 ms
+ptxas info    : Compiling entry function 'void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float const*, unsigned long long, cuda::std::__4::plus<void>, float, cuda::std::__4::identity>(float const*, float*, unsigned long long, cub::_V_300303_SM_1200::GridEvenShare<unsigned long long>, cuda::std::__4::plus<void>, cuda::std::__4::identity)' for 'sm_120'
+ptxas info    : Function properties for void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float const*, unsigned long long, cuda::std::__4::plus<void>, float, cuda::std::__4::identity>(float const*, float*, unsigned long long, cub::_V_300303_SM_1200::GridEvenShare<unsigned long long>, cuda::std::__4::plus<void>, cuda::std::__4::identity)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 44 bytes smem
+ptxas info    : Compile time = 67.309 ms
+ptxas info    : Compiling entry function 'void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceSingleTileKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float const*, float*, unsigned long long, cuda::std::__4::plus<void>, float, float, cuda::std::__4::identity>(float const*, float*, unsigned long long, cuda::std::__4::plus<void>, float, cuda::std::__4::identity)' for 'sm_120'
+ptxas info    : Function properties for void cub::_V_300303_SM_1200::detail::reduce::DeviceReduceSingleTileKernel<cub::_V_300303_SM_1200::detail::reduce::policy_selector_from_types<float, unsigned long long, cuda::std::__4::plus<void> >, float const*, float*, unsigned long long, cuda::std::__4::plus<void>, float, float, cuda::std::__4::identity>(float const*, float*, unsigned long long, cuda::std::__4::plus<void>, float, cuda::std::__4::identity)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 44 bytes smem
+ptxas info    : Compile time = 60.746 ms
+ptxas info    : Compiling entry function 'void cub::_V_300303_SM_1200::detail::EmptyKernel<void>()' for 'sm_120'
+ptxas info    : Function properties for void cub::_V_300303_SM_1200::detail::EmptyKernel<void>()
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 4 registers, used 0 barriers
+ptxas info    : Compile time = 1.521 ms
+ptxas info    : Compiling entry function 'reduce_grid_stride(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_grid_stride(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 18 registers, used 1 barriers, 32 bytes smem
+ptxas info    : Compile time = 7.406 ms
+ptxas info    : Compiling entry function 'reduce_warp_shuffle(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_warp_shuffle(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 1 barriers, 1024 bytes smem
+ptxas info    : Compile time = 5.810 ms
+ptxas info    : Compiling entry function 'reduce_first_add(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_first_add(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 1 barriers, 1024 bytes smem
+ptxas info    : Compile time = 6.512 ms
+ptxas info    : Compiling entry function 'reduce_sequential(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_sequential(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 1 barriers, 1024 bytes smem
+ptxas info    : Compile time = 5.983 ms
+ptxas info    : Compiling entry function 'reduce_interleaved(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_interleaved(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 1 barriers, 1024 bytes smem
+ptxas info    : Compile time = 6.348 ms
+ptxas info    : Compiling entry function 'reduce_atomic(float const*, float*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for reduce_atomic(float const*, float*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers
+ptxas info    : Compile time = 2.624 ms
