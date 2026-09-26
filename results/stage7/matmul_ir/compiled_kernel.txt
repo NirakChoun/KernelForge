@@ -1,0 +1,6 @@
+config: BM=128,BN=128,BK=32,GROUP_M=8;num_warps=8;num_stages=3
+regs: 220
+spills: 0
+shared_bytes: 65536
+num_warps: 8
+num_stages: 3
