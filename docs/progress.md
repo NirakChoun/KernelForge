@@ -241,3 +241,36 @@ Headline results (details in `docs/roofline.md`):
 Failures: none. Counter probes: 6000_blackwell hive-dc-7-4-58 (job 24037338) and the Max-Q GRES type on hive-as-11-2-34 (job 24037343) also DENIED; two probes still queued.
 
 Open questions (details in `docs/roofline.md`): power cap as the cause of kernel-dependent clocks; 1710.7 GB/s as the nominal ceiling at the loaded memory clock; v2 equal to v3; load-only baseline slower than v4 and v5; power-of-two stride in v1.
+
+## Stage 7 report
+
+Details in `docs/stage7.md`.
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| 991c2e3 | stage7: add python benchmark harness matching the c++ harness |
+| ce01d93 | stage7: add autotuned triton kernels for vector add, softmax, rmsnorm, matmul |
+| 8c25580 | stage7: add triton driver with correctness checks, ir dumps, and autotune records |
+| 31fe0cc | stage7: add stage 7 run script |
+| 388dd41 | stage7: ignore cubin build outputs |
+| 395bdc0 | stage7: add triton vector add, softmax, matmul results, autotune records, and matmul ir dumps (job 24047985) |
+| e3ceb1a | stage7: add stage 7 doc |
+
+Headline results (job 24047985, matmul warm, GFLOP/s and % of `cublasSgemm` in the same job):
+
+| Shape | cuBLAS | Triton | CUDA v6 |
+|---|---|---|---|
+| 4096 | 50557.9 | 47127.3 (93.2%) | 37209.4 (73.6%) |
+| 8192 | 50029.8 | 46334.9 (92.6%) | 38032.9 (76.0%) |
+| 4097 | 45829.2 | 36174.2 (78.9%) | 34265.9 (74.8%) |
+| 777 x 1111 x 333 | 13191.1 | 18714.9 (141.9%) | 8283.2 (62.8%) |
+
+Triton matmul at 4096: BM=128, BN=128, BK=32, 8 warps, 3 stages; 220 registers, 65536 B shared memory; FP32 FFMA only (`input_precision="ieee"`). Triton vector add at 2^26, L2 flushed: 1512.4 GB/s (98.8% of 1530).
+
+Flagged (recorded as measured): Triton beats `cublasSgemm` at 1024 (104.7%) and 777 x 1111 x 333 (141.9%); the 4097 and 1000 compiles use 255 registers with 6 B spill.
+
+Failures: none in job 24047985. The previous session's Mac working folder held no uncopied KernelForge files.
+
+Open questions (details in `docs/stage7.md`): two cuBLAS paths differ by 4.8% at 1024; register growth at non-divisible shapes; softmax at 3000 columns; autotune CSV lacks run-identification columns.
