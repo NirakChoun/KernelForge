@@ -39,6 +39,24 @@ Correctness, before timing:
 
 All 70 configurations of the main run passed (70 kernel-vs-cuBLAS checks, 42 kernel-vs-CPU, 42 cuBLAS-vs-CPU). Largest error across all checks: 3.94e-7 of (|A||B|)_ij, against a tolerance of 1.74e-5 at that K (333). A separate test job ran every version and configuration at 1, 17, 128, 1000, 1023, and 777 x 1111 x 333 before the commits; all 330 runs passed.
 
+### cuBLAS baseline precision check
+
+The cuBLAS baseline is pure FP32. Verified on 2026-09-26 in job 24039529 (same GPU type, `high`), output in `results/stage3/cublas_fp32_check.txt` and `results/stage3/nsys_cublas_*.csv`:
+
+1. Math mode: `src/sgemm.cu` calls `cublasSetMathMode(h, CUBLAS_DEFAULT_MATH)` and `cublasSgemm` (FP32 inputs, FP32 compute). `src/cublas_fp32_check.cu` reads the mode back after `cublasCreate`: 0 (`CUBLAS_DEFAULT_MATH`). cuBLAS version 130501.
+2. Environment: inside the job, `NVIDIA_TF32_OVERRIDE` and `CUBLAS_EMULATION_STRATEGY` are unset, and `env | grep -iE "tf32|cublas"` prints nothing. Slurm jobs inherit the submitting shell environment, which has neither variable.
+3. Numerics: cuBLAS SGEMM compared with a cuBLAS DGEMM reference on the same inputs, max_ij |C - C_fp64| / (|A||B|)_ij:
+
+| n | Default math (as in Stage 3) | TF32 tensor-op math forced |
+|---|---|---|
+| 1024 | 1.023e-07 | 5.110e-05 |
+| 4096 | 9.819e-08 | 2.892e-05 |
+| 8192 | 2.178e-07 | 2.154e-05 |
+
+4. Kernel: Nsight Systems shows every cuBLAS launch at 4096 and 8192 in the Stage 3 configuration is `cutlass_80_simt_sgemm_256x128_8x4_nn_align1`, a SIMT (CUDA core) FP32 kernel, not a tensor-op kernel. Median duration 2648198 ns at 4096 and 21563385 ns at 8192 under nsys.
+
+The Stage 3 percentages of cuBLAS stand as reported.
+
 Static analysis (`results/stage3/ptxas_sgemm.txt`, `sass_ops_sgemm.csv`, `sass_sgemm_v5_v6.txt`): no kernel spills or uses local memory. Static SASS instruction counts per kernel. Loop unrolling differs between kernels, so these are counts in the binary, not per-iteration or executed counts:
 
 | Kernel | Regs | Static smem (B) | Theo. occupancy | Notes |

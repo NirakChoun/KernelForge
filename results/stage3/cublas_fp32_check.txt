@@ -1,0 +1,12 @@
+ENV_END
+NVIDIA_TF32_OVERRIDE=(unset)
+CUBLAS_EMULATION_STRATEGY=(unset)
+math mode after cublasCreate: 0 (CUBLAS_DEFAULT_MATH=0, CUBLAS_TF32_TENSOR_OP_MATH=3)
+cuBLAS version: 130501
+CHECK n=1024 math=default max_err/(|A||B|)=1.023e-07
+CHECK n=1024 math=tf32_tensor_op max_err/(|A||B|)=5.110e-05
+CHECK n=4096 math=default max_err/(|A||B|)=9.819e-08
+CHECK n=4096 math=tf32_tensor_op max_err/(|A||B|)=2.892e-05
+CHECK n=8192 math=default max_err/(|A||B|)=2.178e-07
+CHECK n=8192 math=tf32_tensor_op max_err/(|A||B|)=2.154e-05
+job 24039529
