@@ -58,6 +58,27 @@ __global__ void reduce_first_add(const float* __restrict__ in, float* __restrict
   if (tid == 0) out[blockIdx.x] = s[0];
 }
 
+constexpr unsigned kFullMask = 0xffffffffu;
+
+// v5: v4, but the last 64 values are reduced by one warp with shuffles, without
+// shared memory or __syncthreads.
+__global__ void reduce_warp_shuffle(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  __shared__ float s[kBlock];
+  const unsigned tid = threadIdx.x;
+  const size_t i = static_cast<size_t>(blockIdx.x) * (2 * kBlock) + tid;
+  s[tid] = (i < n ? in[i] : 0.0f) + (i + kBlock < n ? in[i + kBlock] : 0.0f);
+  __syncthreads();
+  for (unsigned stride = kBlock / 2; stride > 32; stride >>= 1) {
+    if (tid < stride) s[tid] += s[tid + stride];
+    __syncthreads();
+  }
+  if (tid < 32) {
+    float v = s[tid] + s[tid + 32];
+    for (int off = 16; off > 0; off >>= 1) v += __shfl_down_sync(kFullMask, v, off);
+    if (tid == 0) out[blockIdx.x] = v;
+  }
+}
+
 struct Plan {
   std::string name, variant = "-", grid = "-", block = "-";
   kf::KernelInfo ki;
@@ -123,6 +144,7 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
     case 2: return tiled_plan("v2_interleaved", reduce_interleaved, kBlock, in, n, a, b, result);
     case 3: return tiled_plan("v3_sequential", reduce_sequential, kBlock, in, n, a, b, result);
     case 4: return tiled_plan("v4_first_add", reduce_first_add, 2 * kBlock, in, n, a, b, result);
+    case 5: return tiled_plan("v5_warp_shuffle", reduce_warp_shuffle, 2 * kBlock, in, n, a, b, result);
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
