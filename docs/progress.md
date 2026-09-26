@@ -310,3 +310,38 @@ Open questions (details in `docs/stage8.md`): unrecorded fix of the earlier CUDA
 ## Stage 9
 
 Skipped by choice (project owner's decision, 2026-09-26). No code or results.
+
+## Stage 10 report (capstone)
+
+Details in `docs/capstone.md`.
+
+Commits:
+
+| Hash | Message |
+|---|---|
+| c3dba57 | stage10: add occupancy api query to the ml kernel library |
+| 30a6d31 | stage10: add capstone driver for triton vs cuda matmul and softmax with sass and occupancy |
+| a49147a | stage10: add capstone run script with clock logging |
+| 6658ba1 | stage10: write cuda sgemm sass counts in the capstone run script |
+| 84a3e7d | stage10: add capstone results, clocks, sass and occupancy data (job 24049608) |
+| 56401e9 | stage10: add capstone doc |
+| c36855c | stage10: record final counter probe results and stop further probes |
+
+Headline results (job 24049608, matmul warm, GFLOP/s, % of `cublasSgemm` in the same job, median SM clock):
+
+| Shape | cublasSgemm | Triton | CUDA v6 |
+|---|---|---|---|
+| 512 | 13888.4 @2332 | 18724.6 (134.8%) @2332 | 3133.6 (22.6%) @2340 |
+| 1024 | 34681.6 @1920 | 37428.3 (107.9%) @2295 | 13132.9 (37.9%) @2336 |
+| 4096 | 48090.0 @1477 | 45652.3 (94.9%) @2325 | 36510.2 (75.9%) @2295 |
+| 4097 | 43798.2 @1792 | 35627.3 (81.3%) @2183 | 33680.3 (76.9%) @2212 |
+| 8192 | 48536.7 @1432 | 45232.1 (93.2%) @1515 | 37654.7 (77.6%) @1650 |
+| 777 x 1111 x 333 | 13171.8 @2325 | 18714.9 (142.1%) @2340 | 8287.1 (62.9%) @2340 |
+
+At 8192 (all runs at 300 W): % of clock-adjusted FP32 peak cuBLAS 70.4, Triton 62.0, v6 47.4. Softmax, L2 flushed: Triton 95.4% to 97.9% of 1530 GB/s, CUDA 92.1% to 95.7%, Triton faster at all 13 row lengths.
+
+Flagged (recorded as measured): per clock, Triton beats `cublasSgemm` only at 512 and 777 x 1111 x 333; Triton runs had higher median SM clocks than cuBLAS runs at most shapes; at non-multiple-of-16 dimensions Triton emits 32-bit global accesses and 255-register kernels with spill; in the num_stages ablation the raw gain (39945.8 to 45528.4 GFLOP/s) disappears after clock adjustment.
+
+Failures: none; 120 correctness checks passed. Probe 24037344 cancelled at the owner's request.
+
+Open questions (details in `docs/capstone.md`): `torch.matmul` vs `cublasSgemm` per clock; autotuning on raw time under a varying clock; v6 ahead per clock at 4096 x 4096 x 1000; high-register Triton softmax configs; num_stages at 8192.
