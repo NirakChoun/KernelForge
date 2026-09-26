@@ -156,7 +156,72 @@ def stage2():
     save(fig, RES / "stage2" / "reduce_largest.png")
 
 
-STAGES = {"0": stage0, "1": stage1, "2": stage2}
+def stage3():
+    df = pd.read_csv(RES / "stage3" / "sgemm.csv")
+    sq = df[(df.M == df.N) & (df.N == df.K) & ((df.M & (df.M - 1)) == 0)]
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for kernel, g in sq.groupby("kernel"):
+        g = g.sort_values("M")
+        ax.plot(g.M, g.metric_value, marker="o", ms=4, label=kernel,
+                ls="--" if kernel == "cublas" else "-")
+    ax.set_xscale("log", base=2)
+    ax.set_yscale("log")
+    ax.set_xlabel("M = N = K")
+    ax.set_ylabel("GFLOP/s")
+    ax.set_title("Stage 3: SGEMM versions vs cuBLAS, square sizes", fontsize=10)
+    ax.legend(fontsize=7)
+    save(fig, RES / "stage3" / "sgemm_gflops.png")
+
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    sizes = sorted(sq.M.unique())
+    kernels = [k for k in sorted(sq.kernel.unique()) if k != "cublas"]
+    width = 0.8 / len(kernels)
+    for j, kernel in enumerate(kernels):
+        pct = []
+        for m in sizes:
+            ref = sq[(sq.kernel == "cublas") & (sq.M == m)].metric_value
+            val = sq[(sq.kernel == kernel) & (sq.M == m)].metric_value
+            pct.append(100 * val.iloc[0] / ref.iloc[0] if len(ref) and len(val) else float("nan"))
+        ax.bar([i + j * width for i in range(len(sizes))], pct, width, label=kernel)
+    ax.set_xticks([i + 0.4 - width / 2 for i in range(len(sizes))])
+    ax.set_xticklabels([str(s) for s in sizes])
+    ax.set_xlabel("M = N = K")
+    ax.set_ylabel("% of cuBLAS GFLOP/s")
+    ax.set_title("Stage 3: SGEMM as a percentage of cuBLAS", fontsize=10)
+    ax.legend(fontsize=7)
+    save(fig, RES / "stage3" / "sgemm_pct_cublas.png")
+
+    ts = pd.read_csv(RES / "stage3" / "tile_sweep.csv")
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4.5), sharey=True)
+    for ax, (kernel, g) in zip(axes, ts.groupby("kernel")):
+        cfgs = list(dict.fromkeys(g.variant))
+        sizes = sorted(g.M.unique())
+        width = 0.8 / len(sizes)
+        for j, m in enumerate(sizes):
+            vals = [g[(g.variant == c) & (g.M == m)].metric_value.iloc[0] for c in cfgs]
+            ax.bar([i + j * width for i in range(len(cfgs))], vals, width, label=f"{m}")
+        ax.set_xticks([i + 0.4 - width / 2 for i in range(len(cfgs))])
+        ax.set_xticklabels([c.split("=")[1] for c in cfgs], fontsize=7, rotation=30)
+        ax.set_title(kernel, fontsize=9)
+    axes[0].set_ylabel("GFLOP/s")
+    axes[-1].legend(title="M = N = K", fontsize=7)
+    fig.suptitle("Stage 3: tile and block size sweep", fontsize=10)
+    save(fig, RES / "stage3" / "tile_sweep.png")
+
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    big = ts[ts.M == ts.M.max()]
+    for kernel, g in big.groupby("kernel"):
+        ax.scatter(g.theo_occupancy, g.metric_value, label=kernel)
+        for _, r in g.iterrows():
+            ax.annotate(r.variant.split("=")[1], (r.theo_occupancy, r.metric_value), fontsize=6)
+    ax.set_xlabel("theoretical occupancy (occupancy API)")
+    ax.set_ylabel("GFLOP/s")
+    ax.set_title(f"Stage 3: occupancy vs GFLOP/s at M = N = K = {int(big.M.max())}", fontsize=10)
+    ax.legend(fontsize=7)
+    save(fig, RES / "stage3" / "occupancy_vs_gflops.png")
+
+
+STAGES = {"0": stage0, "1": stage1, "2": stage2, "3": stage3}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or any(a not in STAGES for a in sys.argv[1:]):
