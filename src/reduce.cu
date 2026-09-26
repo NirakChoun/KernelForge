@@ -5,6 +5,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <cub/device/device_reduce.cuh>
 #include "kf/bench.cuh"
 
 constexpr int kBlock = 256;
@@ -185,6 +186,19 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
       p.run = [=] {
         reduce_grid_stride<<<grid, kBlock>>>(in, a, n);
         reduce_grid_stride<<<1, kBlock>>>(a, result, grid);
+      };
+      return p;
+    }
+    case 7: {
+      Plan p;
+      p.name = "v7_cub";
+      p.variant = "cub::DeviceReduce::Sum";
+      size_t temp_bytes = 0;
+      CUDA_CHECK(cub::DeviceReduce::Sum(nullptr, temp_bytes, in, result, static_cast<int64_t>(n)));
+      void* temp = nullptr;
+      CUDA_CHECK(cudaMalloc(&temp, temp_bytes));  // freed at exit; allocated outside timing
+      p.run = [=]() mutable {
+        CUDA_CHECK(cub::DeviceReduce::Sum(temp, temp_bytes, in, result, static_cast<int64_t>(n)));
       };
       return p;
     }
