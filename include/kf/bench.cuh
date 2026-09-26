@@ -24,11 +24,13 @@ struct BenchArgs {
   std::vector<std::string> rest;  // binary-specific flags, parsed by the caller
 };
 
-// Common CLI: <n> [--flush | --launches K] [--csv PATH | --no-csv] [binary flags...]
+// Common CLI: <n> [--flush | --launches K] [--warmup W] [--reps R] [--csv PATH | --no-csv]
+// [binary flags...]. W >= 10 and R >= 100 (project minimums); defaults 10 and 100.
 inline BenchArgs parse_bench_args(int argc, char** argv, const std::string& default_csv,
                                   const char* extra_usage = "") {
   auto usage = [&] {
-    std::fprintf(stderr, "usage: %s <n> [--flush | --launches K] [--csv PATH | --no-csv] %s\n",
+    std::fprintf(stderr,
+                 "usage: %s <n> [--flush | --launches K] [--warmup W] [--reps R] [--csv PATH | --no-csv] %s\n",
                  argv[0], extra_usage);
     std::exit(2);
   };
@@ -42,9 +44,11 @@ inline BenchArgs parse_bench_args(int argc, char** argv, const std::string& defa
     else if (!std::strcmp(argv[i], "--no-csv")) a.csv.clear();
     else if (!std::strcmp(argv[i], "--flush")) a.flush = true;
     else if (!std::strcmp(argv[i], "--launches") && i + 1 < argc) a.launches = std::atoi(argv[++i]);
+    else if (!std::strcmp(argv[i], "--warmup") && i + 1 < argc) a.warmup = std::atoi(argv[++i]);
+    else if (!std::strcmp(argv[i], "--reps") && i + 1 < argc) a.reps = std::atoi(argv[++i]);
     else a.rest.emplace_back(argv[i]);
   }
-  if (a.launches < 1) usage();
+  if (a.launches < 1 || a.warmup < 10 || a.reps < 100) usage();
   if (a.flush && a.launches > 1) {
     // Only the first launch of each rep would be cold, so the result would be neither.
     std::fprintf(stderr, "--flush requires --launches 1\n");
