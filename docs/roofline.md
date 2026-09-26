@@ -6,6 +6,8 @@ Where does each Stage 0 to 3 kernel sit relative to the memory and compute ceili
 
 ## Setup
 
+The Stage 0 to 3 results are placed on a roofline. Three new jobs add clock and power logs, a timing of the reduction tree phase alone, and a naive SGEMM sweep around powers of two.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 188 SMs, 300 W board power (datasheet), `high` partition |
@@ -28,9 +30,11 @@ Peak FP32 = SMs x FP32 lanes per SM x 2 (FMA) x SM clock.
 
 ## Results
 
-### Clocks, power, temperature (job 24039707)
+Under load the card sits at its 300 W limit with median SM clocks of 1515 to 2332 MHz. The memory-bound kernels reach 99.6% to 100.5% of the memory roof; SGEMM reaches 24.9% (v6) and 34.4% (cuBLAS) of the compute roof at 3090 MHz.
 
-Median over active samples; FP32 peak at that run's median SM clock. Idle before the runs: 180 MHz SM, 12.8 W.
+### Clocks, power, temperature
+
+From `results/stage4/clock_summary.csv` (job 24039707). Median over active samples; FP32 peak at that run's median SM clock. Idle before the runs: 180 MHz SM, 12.8 W.
 
 | Run | Active samples | SM MHz median (min to max) | Memory MHz | Power W median (max) | Temp C median (max) | FP32 peak at median clock (GFLOP/s) |
 |---|---|---|---|---|---|---|
@@ -93,9 +97,9 @@ FLOPs are FP32 operations the algorithm needs (FMA = 2); bytes are compulsory DR
 
 The ridge point (148.7 TFLOPS / 1530 GB/s) is at AI = 97.2 FLOP/B. Plot: `results/stage4/roofline.png` (kernels with zero FP32 FLOPs are in the table only).
 
-### Occupancy versus performance (Stage 3 tile sweep, job 24038802)
+### Occupancy versus performance
 
-Registers per thread and static shared memory per block from `cudaFuncGetAttributes`; blocks per SM and theoretical occupancy from `cudaOccupancyMaxActiveBlocksPerMultiprocessor`. GFLOP/s at M = N = K = 4096, sorted by throughput.
+From the Stage 3 tile sweep (`results/stage3/tile_sweep.csv`, job 24038802). Registers per thread and static shared memory per block from `cudaFuncGetAttributes`; blocks per SM and theoretical occupancy from `cudaOccupancyMaxActiveBlocksPerMultiprocessor`. GFLOP/s at M = N = K = 4096, sorted by throughput.
 
 | Version | Configuration | Threads/block | Regs/thread | Static smem/block (B) | Blocks/SM | Theo. occupancy | GFLOP/s at 4096 |
 |---|---|---|---|---|---|---|---|
@@ -115,9 +119,9 @@ Registers per thread and static shared memory per block from `cudaFuncGetAttribu
 
 Default (main-run) configurations add v6 128x128x8x8x8 (256 threads, 94 regs, 8192 B, 2 blocks/SM, 0.333, 36845.6 GFLOP/s at 4096) and v1/v2 (1024 threads, 31/32 regs, 1 block/SM, 0.667).
 
-### Reduction tree phase (job 24039791)
+### Reduction tree phase
 
-First pass only (one kernel launch that produces per-block partial sums; checked exactly per block). v0 is the same load into shared memory and barrier without the tree. Median time per launch in us.
+From `results/stage4/reduce_tree.csv` (job 24039791). First pass only (one kernel launch that produces per-block partial sums; checked exactly per block). v0 is the same load into shared memory and barrier without the tree. Median time per launch in us.
 
 | n | Mode | v0 load only | v2 interleaved | v3 sequential | v4 first add | v5 warp shuffle |
 |---|---|---|---|---|---|---|
@@ -128,9 +132,9 @@ First pass only (one kernel launch that produces per-block partial sums; checked
 
 Plot: `results/stage4/reduce_tree.png`.
 
-### Naive SGEMM around powers of two (job 24039792)
+### Naive SGEMM around powers of two
 
-GFLOP/s, square M = N = K (`results/stage4/naive_sweep.csv`, plot `results/stage4/naive_sweep.png`):
+GFLOP/s, square M = N = K (`results/stage4/naive_sweep.csv`, job 24039792, plot `results/stage4/naive_sweep.png`):
 
 | Size | 1016 | 1020 | 1022 | 1023 | 1024 | 1025 | 1026 | 1028 | 1032 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -143,6 +147,8 @@ GFLOP/s, square M = N = K (`results/stage4/naive_sweep.csv`, plot `results/stage
 | v2 | 5737.6 | 5643.5 | 5635.6 | 5617.2 | 5722.1 | 5636.8 | 5601.0 | 5589.5 | 5588.4 |
 
 ## Observations
+
+Clocks depend on the kernel under the same 300 W cap, and the two fastest SGEMMs ran at the lowest clocks. v2 and v3 cost the same even with the tree phase isolated, and v1 slows only at exact powers of two.
 
 - Every clock-logged run held board power at 300 W (median 299.5 to 300.0 W). The median SM clock under load was 1515 to 2332 MHz, 49.0% to 75.5% of the 3090 MHz maximum. The memory clock was 13365 MHz in every run, below the 14001 MHz maximum reported by `nvidia-smi`; at 13365 MHz the nominal bandwidth formula gives 2 x 13365 MHz x 64 B = 1710.7 GB/s.
 - cuBLAS ran at the lowest SM clock of all runs (1515 MHz at 8192) and reached 71.4% of the FP32 peak at that clock; v6 ran at 1642 MHz and reached 47.5%; v5 ran at 2160 MHz and reached 19.1%. At 8192, the two highest-throughput SGEMMs (cuBLAS and v6) ran at the two lowest SM clocks (1515 and 1642 MHz); v4 and v5 ran at 2025 and 2160 MHz.
@@ -158,6 +164,8 @@ GFLOP/s, square M = N = K (`results/stage4/naive_sweep.csv`, plot `results/stage
 TODO(Nirak)
 
 ## Open questions
+
+Open items are the mechanism behind kernel-dependent clocks, the nominal ceiling at the loaded memory clock, and four kernel-level questions carried from Stages 2 and 3.
 
 - Is the 300 W cap the reason SM clocks differ by kernel, with FP32-dense kernels drawing more power per clock and so running slower? `power.draw` may be averaged over a window longer than 100 ms by the driver; `power.draw.instant` and the `clocks_event_reasons` fields would confirm power capping directly.
 - With the memory clock at 13365 MHz under load, is 1710.7 GB/s the relevant nominal ceiling rather than 1792.1 GB/s? Against 1710.7 GB/s the Stage 0 achievable 1530 GB/s is 89.4% of nominal.
