@@ -6,6 +6,8 @@ How close does each classic reduction optimization bring a float sum to the achi
 
 ## Setup
 
+Seven versions reduce up to 2^28 floats with L2 flushed; each must pass an exact integer test and a float tolerance test before it is timed.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, hive-dc-7-5-58, `high` |
@@ -51,6 +53,8 @@ Static analysis (`results/stage2/ptxas_reduce.txt`, `sass_ops_reduce.csv`, and `
 
 ## Results
 
+At 2^28, v5, v6, and CUB reach 99.6% to 100.5% of achievable bandwidth and v4 97.9%; the shared-memory trees v2 and v3 stop at 58.3% to 58.6%, and single-address atomics (v1) at 2.8 GB/s.
+
 From `results/stage2/reduce.csv`. Median time in ms / effective GB/s.
 
 | Version | 2^20 | 2^22 | 2^24 | 2^26 | 2^28 |
@@ -93,12 +97,14 @@ Plots: `results/stage2/reduce_bandwidth.png`, `results/stage2/reduce_largest.png
 
 ## Observations
 
+The large steps are v3 to v4 (1.67x) and v1 to any tree; v2 vs v3, v4 vs v5, and v5 vs v6 differ by a few percent or less at 2^28.
+
 - v1 runs at 2.8 GB/s at every size, about 1.45 ns per element (388.167694 ms for 2^28 elements).
 - v2 and v3 have identical medians at 2^20, 2^22, 2^24, 2^26, 1000003, and 16777233. At 2^28, v3 is 0.5% faster (1.198080 vs 1.204224 ms).
 - v4 is 1.67x faster than v3 at 2^28 (0.716800 vs 1.198080 ms) and 1.65x at 2^26.
 - v5 is 2.0% faster than v4 at 2^28 and 5.6% faster at 2^26.
 - v6, with 1128 blocks and 2 launches, is within 0.3% of v5 at 2^28 and 1.1% at 2^26, and 8.0% slower than v5 at 2^24.
-- CUB is the fastest at 2^28 (1537.5 GB/s, 0.5% above the 1530 GB/s achievable figure); v5 is within 0.6% of it. At 2^22 v5 has a lower median than CUB (0.018432 vs 0.020480 ms); both are multiples of 1.024 us (see Stage 0).
+- CUB is the fastest at 2^28 (1537.5 GB/s, 0.5% above the 1530 GB/s achievable figure); v5 is within 0.6% of it. At 2^22 v5 has a lower median than CUB (0.018432 vs 0.020480 ms); both are multiples of 1.024 us, the timer step recorded in Stage 0.
 - At 2^20 every tiled version and CUB take 10.2 to 14.3 us for 4 MiB of input.
 
 ## Interpretation
@@ -107,7 +113,9 @@ TODO(Nirak)
 
 ## Open questions
 
-- v2 (divergent `tid % (2*stride)`) and v3 (contiguous `tid < stride`) take the same time. Is the tree phase too small a share of the kernel to matter once the load is DRAM-bound, or does the compiler generate equivalent code for both? Test: compare the two SASS listings in `results/stage2/sass_reduce.txt`; ncu warp state statistics for both (pending counter access); a warm, L2-resident run where the tree phase is a larger share.
+The counter-based tests below are pending counter access (commands in `docs/progress.md`).
+
+- v2 (divergent `tid % (2*stride)`) and v3 (contiguous `tid < stride`) take the same time. Is the tree phase too small a share of the kernel to matter once the load is DRAM-bound, or does the compiler generate equivalent code for both? Test: compare the two SASS listings in `results/stage2/sass_reduce.txt`; ncu warp state statistics for both; a warm, L2-resident run where the tree phase is a larger share.
 - Why does halving the number of blocks and adding during the load (v4) give 1.67x over v3? Is v3 limited by loads in flight per thread, by 9 barriers per 256 elements, or by the extra partial sums? Test: v3 with 512-thread blocks; nsys per-pass timing.
 - v1 at 1.45 ns per atomic: is that the throughput limit of same-address float reductions at one L2 slice? Test: atomics spread over 2, 4, 32 addresses; warp-aggregated atomics.
 - v6 is slower than v5 at 2^24 but equal at 2^28. Is one wave of 1128 blocks with a grid-stride loop less able to keep enough loads in flight at 64 MiB, or is the second launch a fixed cost? Test: v6 with 2 or 4 waves; nsys timing of each launch.
