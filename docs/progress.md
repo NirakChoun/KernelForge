@@ -12,9 +12,9 @@ Running log of stage reports, performance counter access, and profiling that cou
 | 6000_blackwell | hive-dc-7-5-58 | 24037339 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-5-62 | 24037340 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | 6000_blackwell | hive-dc-7-6-54 | 24037341 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
-| 6000_blackwell | hive-dc-7-7-58 | 24037342 | | pending (Resources) |
+| 6000_blackwell | hive-dc-7-7-58 | 24037342 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
 | nvidia_rtx_pro_6000_blackwell_max-q_workstation_edition | hive-as-11-2-34 | 24037343 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | DENIED |
-| nvidia_rtx_5000_ada_generation | (hive-as-11-2-54) | 24037344 | | pending (Priority) |
+| nvidia_rtx_5000_ada_generation | (hive-as-11-2-54) | 24037344 | | cancelled before it ran |
 | nvidia_l40s | hive-as-11-2-58 | 24037345 | NVIDIA L40S | DENIED |
 | nvidia_a100-sxm4-80gb | hive-as-11-4-34 | 24037346 | NVIDIA A100-SXM4-80GB | DENIED |
 | nvidia_a100-pcie-40gb | hive-as-11-4-54 | 24037347 | NVIDIA A100-PCIE-40GB | DENIED |
@@ -22,7 +22,7 @@ Running log of stage reports, performance counter access, and profiling that cou
 | a6000 | hive-dc-7-5-30 | 24037349 | NVIDIA RTX A6000 | DENIED |
 | a100 | hive-dc-7-6-14 | 24037350 | NVIDIA A100 80GB PCIe | DENIED |
 
-No probed node allows counter access so far. Jobs 24037338 and 24037343 ran later and were also denied. The two remaining probes (24037342, 24037344) were still queued at 14:27 on 2026-09-26 and are left in the queue; their result is the `PROBE_RESULT` line in `slurm-<jobid>.out`. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
+No probed node allows counter access so far. Jobs 24037338 and 24037343 ran later and were also denied. Probe 24037342 later ran on hive-dc-7-7-58 and was denied. Probe 24037344 was cancelled while pending on 2026-09-26 at the project owner's request; no further probes are submitted. Nsight Systems CUDA tracing works on hive-dc-7-5-58 (job 24037643) and is used for kernel durations.
 
 ## Pending profiling
 
