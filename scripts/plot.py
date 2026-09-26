@@ -221,7 +221,40 @@ def stage3():
     save(fig, RES / "stage3" / "occupancy_vs_gflops.png")
 
 
-STAGES = {"0": stage0, "1": stage1, "2": stage2, "3": stage3}
+def stage4():
+    ns = pd.read_csv(RES / "stage4" / "naive_sweep.csv")
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.2))
+    for ax, (lo, hi) in zip(axes, [(1016, 1032), (4088, 4104)]):
+        g = ns[(ns.M >= lo) & (ns.M <= hi)]
+        for kernel, gg in g.groupby("kernel"):
+            gg = gg.sort_values("M")
+            ax.plot(gg.M, gg.metric_value, marker="o", ms=3, label=kernel)
+        ax.set_xlabel("M = N = K")
+        ax.set_ylabel("GFLOP/s")
+        ax.set_ylim(0, None)
+        ax.legend(fontsize=7)
+    fig.suptitle("Stage 4: v1 naive and v2 coalesced SGEMM around 1024 and 4096", fontsize=10)
+    save(fig, RES / "stage4" / "naive_sweep.png")
+
+    rt = pd.read_csv(RES / "stage4" / "reduce_tree.csv")
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ns_ = sorted(rt.n.unique())
+    kernels = sorted(rt.kernel.unique())
+    width = 0.8 / len(kernels)
+    for j, k in enumerate(kernels):
+        vals = [rt[(rt.kernel == k) & (rt.n == n)].median_ms.iloc[0] * 1e3 for n in ns_]
+        ax.bar([i + j * width for i in range(len(ns_))], vals, width, label=k)
+    ax.set_xticks([i + 0.4 - width / 2 for i in range(len(ns_))])
+    ax.set_xticklabels([f"2^{int(n).bit_length() - 1}\n{'warm, K=100' if n < 2**25 else 'L2 flushed'}"
+                        for n in ns_], fontsize=8)
+    ax.set_yscale("log")
+    ax.set_ylabel("median time per first pass (us)")
+    ax.set_title("Stage 4: reduction first pass only, per version", fontsize=10)
+    ax.legend(fontsize=7)
+    save(fig, RES / "stage4" / "reduce_tree.png")
+
+
+STAGES = {"0": stage0, "1": stage1, "2": stage2, "3": stage3, "4": stage4}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or any(a not in STAGES for a in sys.argv[1:]):
