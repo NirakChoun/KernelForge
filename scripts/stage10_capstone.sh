@@ -22,3 +22,6 @@ sleep 1
 kill $logger 2>/dev/null || true
 python3 scripts/clock_summary.py "$out" > /dev/null
 echo "clock summary: $(wc -l < "$out/clock_summary.csv") lines"
+# Static SASS of the CUDA SGEMM kernels compared in the capstone (v6 both paths, v5 128x128x16x8x8).
+cuobjdump -sass build/sgemm | c++filt | python3 scripts/sass_stats.py \
+  | grep -E '^"void sgemm_(vec<128, 128, 8, 8, 8|2d<128, 128, 16, 8, 8)|^function' > "$out/sass_ops_cuda_sgemm.csv"
