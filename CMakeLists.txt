@@ -51,3 +51,7 @@ target_link_libraries(sgemm PRIVATE CUDA::cublas)
 
 kf_add_bench(cublas_fp32_check src/cublas_fp32_check.cu)
 target_link_libraries(cublas_fp32_check PRIVATE CUDA::cublas)
+
+# Stage 8: softmax and RMSNorm as a shared library for the Python harness (ctypes).
+add_library(kf_ml SHARED src/ml_kernels.cu)
+target_link_libraries(kf_ml PRIVATE kf_common)
