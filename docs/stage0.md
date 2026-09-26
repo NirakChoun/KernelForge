@@ -6,6 +6,8 @@ What bandwidth can simple streaming kernels reach on this GPU, how does it chang
 
 ## Setup
 
+Four streaming kernels were timed with CUDA events across sizes from 1 MiB to 2 GiB, warm and with L2 flushed. Every run passed a correctness check before timing.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, CC 12.0, 188 SMs, 128 MiB L2 |
@@ -21,11 +23,16 @@ What bandwidth can simple streaming kernels reach on this GPU, how does it chang
 | Sweep | total data moved per launch 1 MiB to 2 GiB, powers of two and 1.5x points (`scripts/sweep_stage0.sh`, job 24037480) |
 | Fixed sizes | n = 1048576, 16777216, 67108864, 1000003 (`scripts/fixed_stage0.sh`, job 24037481) |
 
-Correctness: vector_add and copy compare exactly against a CPU result (vector_add with a 1e-6 relative tolerance that was not needed; max error 0). saxpy compares against a double-precision reference with absolute tolerance 6e-7 (2 ulp of the largest possible result, 2.5); max error 1.19e-7. Every run passed before timing.
+Correctness checks:
 
-Achievable bandwidth used in later stages: about 1530 GB/s, the flushed vector_add result at 1 to 2 GiB (1527.2 to 1530.0 GB/s).
+- vector_add and copy: exact comparison against a CPU result (vector_add also allows a 1e-6 relative tolerance, which was not needed; max error 0).
+- saxpy: double-precision reference, absolute tolerance 6e-7 (2 ulp of the largest possible result, 2.5); max error 1.19e-7.
+
+The flushed vector_add result at 1 to 2 GiB (1527.2 to 1530.0 GB/s) sets the achievable bandwidth used in later stages: about 1530 GB/s.
 
 ## Results
+
+With L2 flushed, the streaming kernels reach 81.9% to 85.3% of nominal at 2 GiB. Warm runs exceed nominal while the data fits in L2 and fall back to the cold values above 128 MiB.
 
 Large sizes, from `results/stage0/sweep.csv` (2 GiB total data):
 
@@ -35,7 +42,7 @@ Large sizes, from `results/stage0/sweep.csv` (2 GiB total data):
 | copy_kernel | 1494.7 | 1493.7 | 83.3 |
 | memcpy_d2d | 1465.6 | 1468.6 | 81.9 |
 
-Around the L2 capacity, warm (no flush), from the sweep:
+Around the L2 capacity, warm (no flush), from `results/stage0/sweep.csv`:
 
 | Total data (MiB) | vector_add GB/s | copy_kernel GB/s | memcpy_d2d GB/s |
 |---|---|---|---|
@@ -67,7 +74,7 @@ Fixed sizes, from `results/stage0/fixed_sizes.csv` (median time in ms / GB/s):
 | memcpy_d2d | 16777216 | 0.024800 / 5412.0 | 0.088064 / 1524.1 | |
 | memcpy_d2d | 67108864 | 0.362816 / 1479.7 | 0.362496 / 1481.0 | |
 
-All rows with a per-launch median under 20 us are marked `launch_bound=1` in the CSVs. In the sweep that is every cold point up to 24 MiB, and every warm point up to 48 MiB (copy_kernel), 64 MiB (vector_add), and 96 MiB (memcpy_d2d).
+Rows with a per-launch median under 20 us are marked `launch_bound=1` in the CSVs. In the sweep that is every cold point up to 24 MiB, and every warm point up to 48 MiB (copy_kernel), 64 MiB (vector_add), and 96 MiB (memcpy_d2d).
 
 Nsight Systems kernel durations (`results/stage0/nsys_vector_add_*.csv`, job 24037643, warm, 111 launches):
 
@@ -76,11 +83,21 @@ Nsight Systems kernel durations (`results/stage0/nsys_vector_add_*.csv`, job 240
 | 1048576 | 3136 | 0.007280 |
 | 67108864 | 522114 | 0.526656 |
 
-Static analysis (`results/stage0/ptxas_*.txt`, `sass_ops_*.csv`, `sass_*.txt`): vector_add 12 registers, saxpy 10, copy_kernel 8; no spills, no local memory; theoretical occupancy 1.0 (6 blocks of 256 threads per SM) for all three. Loads and stores are 32-bit (`LDG.E`, `LDG.E.CONSTANT`, `STG.E`); saxpy uses one `FFMA`.
+Static analysis (`results/stage0/ptxas_*.txt`, `sass_ops_*.csv`, `sass_*.txt`):
+
+| Kernel | Registers | Spills / local memory | Theoretical occupancy |
+|---|---|---|---|
+| vector_add | 12 | none | 1.0 (6 blocks of 256 threads per SM) |
+| saxpy | 10 | none | 1.0 |
+| copy_kernel | 8 | none | 1.0 |
+
+Loads and stores are 32-bit (`LDG.E`, `LDG.E.CONSTANT`, `STG.E`); saxpy uses one `FFMA`.
 
 Plots: `results/stage0/sweep_bandwidth.png`, `results/stage0/sweep_time.png`.
 
 ## Observations
+
+Cold bandwidth plateaus from about 24 MiB; warm bandwidth sits above nominal up to 128 MiB and converges with cold from 384 MiB on.
 
 - Cold bandwidth rises with size and levels off from about 24 MiB of total data. From 256 MiB to 2 GiB, cold results are 1486.6 to 1498.0 GB/s for copy_kernel, 1468.6 to 1481.0 GB/s for memcpy_d2d, and 1500.8 to 1530.0 GB/s for vector_add.
 - Warm results exceed the 1792.1 GB/s nominal at every sweep point from 12 MiB to 128 MiB for all three kernels. The warm peak is 4545.8 GB/s (vector_add, 96 MiB), 3378.4 GB/s (copy_kernel, 128 MiB), and 5573.8 GB/s (memcpy_d2d, 128 MiB).
@@ -97,7 +114,9 @@ TODO(Nirak)
 
 ## Open questions
 
-- Does L2 residency between reps explain warm results above nominal up to 128 MiB, and the drop between 128 and 192 MiB? Test: DRAM bytes per launch with ncu `--cache-control none` (pending counter access, see `docs/progress.md`).
+The main unknowns are L2 residency in warm runs, timer resolution at small sizes, and why the three kernels plateau at different levels.
+
+- Does L2 residency between reps explain warm results above nominal up to 128 MiB, and the drop between 128 and 192 MiB? Test: DRAM bytes per launch with ncu `--cache-control none` (pending counter access; commands in `docs/progress.md`).
 - Why is cold timing close to multiples of 1.024 us? Is the event timestamp resolution different after an idle gap, or does the flush kernel change the clock state? This limits cold precision below about 20 us (one step is 5% at 20 us).
 - Why are batched per-launch times on 2.05 us steps, and why is batched vector_add at 1 MiB (4.1 us) slower than the nsys kernel duration (3.1 us)? Is the batched number measuring kernel launch rate rather than kernel time? Not pursued (small-size launch-rate question, deferred by Nirak).
 - Why does memcpy_d2d reach 5573.8 GB/s warm at 128 MiB, above vector_add and copy_kernel? Does the driver use a different copy path (kernel with wider accesses or copy engine)? An nsys trace of the memcpy would show which.
