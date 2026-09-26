@@ -8,6 +8,8 @@ Central question: why is a GPU workload slow, what should change, and what hardw
 
 ## Environment
 
+All results come from one GPU type on the UC Davis Hive cluster, without Nsight Compute counters.
+
 | Item | Value |
 |---|---|
 | Cluster | UC Davis HPC (Hive), Slurm account `publicgrp`, partition `high`, `--gpus=6000_blackwell:1` |
@@ -18,6 +20,8 @@ Central question: why is a GPU workload slow, what should change, and what hardw
 | Profiling | Nsight Compute counters are denied (`ERR_NVGPUCTRPERM`) on every Hive node probed. Analysis uses CUDA event timing, Nsight Systems, `ptxas -v`, the CUDA occupancy API, `cuobjdump` SASS, and `nvidia-smi` clock logs |
 
 ## Results
+
+Hand-written streaming and reduction kernels reach the achievable DRAM bandwidth (about 1530 GB/s). Hand-written FP32 SGEMM reaches 72.4% of cuBLAS at 8192; autotuned Triton reaches 92.6% to 93.2% at 4096 and 8192.
 
 All numbers are medians of at least 100 timed reps after at least 10 warm-ups, on the GPU above. Every kernel passes a correctness check against a reference before it is timed.
 
@@ -57,7 +61,15 @@ Stage 3, FP32 SGEMM, M = N = K = 8192, cuBLAS verified FP32 (no TF32) ([`docs/st
 | v6 float4 vectorized | 37066.3 | 72.4 |
 | cuBLAS | 51188.3 | 100.0 |
 
-Stages 4 to 6, roofline, clocks, and resources ([`docs/roofline.md`](docs/roofline.md)): FP32 peak is 188 x 128 x 2 x SM clock (148.7 TFLOPS at 3090 MHz); under load the card sits at 300 W with SM clocks of 1515 to 2332 MHz. cuBLAS at 8192 reaches 71.4% of the peak at its observed clock, v6 47.5%. The memory-bound kernels (vector add, SAXPY, reduction v5 to v7) reach 99.6% to 100.5% of 1530 GB/s. The fastest SGEMM tile configuration has the lowest theoretical occupancy (0.333).
+Stages 4 to 6, roofline, clocks, and resources ([`docs/roofline.md`](docs/roofline.md)):
+
+| Result | Value |
+|---|---|
+| FP32 peak | 188 x 128 x 2 x SM clock (148.7 TFLOPS at 3090 MHz) |
+| Under load | 300 W, SM clocks 1515 to 2332 MHz |
+| SGEMM at 8192, % of peak at observed clock | cuBLAS 71.4%, v6 47.5% |
+| Memory-bound kernels (vector add, SAXPY, reduction v5 to v7) | 99.6% to 100.5% of 1530 GB/s |
+| Occupancy | the fastest SGEMM tile configuration has the lowest theoretical occupancy (0.333) |
 
 Stage 7, Triton, job 24047985 ([`docs/stage7.md`](docs/stage7.md)):
 
@@ -88,6 +100,8 @@ Stage 10 capstone, when Triton matches or beats hand-written CUDA, job 24049608 
 
 ## Repository layout
 
+CUDA sources and the shared harness are in `src/` and `include/`, Triton and Python drivers in `python/`, run scripts in `scripts/`, and every measured number in `results/`.
+
 | Path | Contents |
 |---|---|
 | `src/` | CUDA benchmarks (`vector_add`, `saxpy`, `copy`, `mem_patterns`, `reduce`, `sgemm`, `cublas_fp32_check`, `device_info`) and `ml_kernels.cu` (shared library for Stage 8 and 10) |
@@ -98,6 +112,8 @@ Stage 10 capstone, when Triton matches or beats hand-written CUDA, job 24049608 
 | `docs/` | stage documents, roofline analysis, capstone, progress log |
 
 ## How to reproduce
+
+Build on a login node, then submit each stage's run script through Slurm.
 
 On a Hive login node (build and submit only; all GPU work runs through Slurm, one job at a time):
 
@@ -126,4 +142,8 @@ sbatch --mem=32G --time=01:00:00 scripts/run_gpu.sh scripts/stage8_ml.sh        
 sbatch --mem=64G --time=01:30:00 scripts/run_gpu.sh scripts/stage10_capstone.sh     # Stage 10
 ```
 
-Result CSVs are appended to, so move a stage's existing results before rerunning it (the Stage 10 script refuses to run over existing results). Binaries take `<n>`, `--flush` (evict L2 before each timed rep), `--launches K`, `--warmup W`, `--reps R`, and `--csv PATH` or `--no-csv`; `sgemm` also takes `--version V`, `--cfg C`, `--ncols N`, `--k K`. Plots and tables: `.venv/bin/python scripts/plot.py <stage>...`, `.venv/bin/python scripts/roofline.py`, `python3 scripts/clock_summary.py <results dir>`, `.venv/bin/python scripts/md_table.py <csv> <cols>`. Static reports: `scripts/kernel_report.sh <stage> <target>...` (ptxas and SASS), `scripts/nsys_kern_sum.sh` (Nsight Systems kernel summary). The profiling commands that need counter access are listed under Pending profiling in `docs/progress.md`.
+- Result CSVs are appended to, so move a stage's existing results before rerunning it (the Stage 10 script refuses to run over existing results).
+- Binaries take `<n>`, `--flush` (evict L2 before each timed rep), `--launches K`, `--warmup W`, `--reps R`, and `--csv PATH` or `--no-csv`; `sgemm` also takes `--version V`, `--cfg C`, `--ncols N`, `--k K`.
+- Plots and tables: `.venv/bin/python scripts/plot.py <stage>...`, `.venv/bin/python scripts/roofline.py`, `python3 scripts/clock_summary.py <results dir>`, `.venv/bin/python scripts/md_table.py <csv> <cols>`.
+- Static reports: `scripts/kernel_report.sh <stage> <target>...` (ptxas and SASS), `scripts/nsys_kern_sum.sh` (Nsight Systems kernel summary).
+- Profiling commands that need counter access are listed under Pending profiling in `docs/progress.md`.
