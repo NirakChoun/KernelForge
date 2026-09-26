@@ -33,6 +33,19 @@ __global__ void sgemm_naive(int M, int N, int K, const float* __restrict__ A,
   }
 }
 
+// v2: same work, but threadIdx.x selects the column, so a warp reads 32 consecutive
+// B elements and writes 32 consecutive C elements; A is the same address for the warp.
+__global__ void sgemm_coalesced(int M, int N, int K, const float* __restrict__ A,
+                                const float* __restrict__ B, float* __restrict__ C) {
+  const int col = blockIdx.x * 32 + threadIdx.x;
+  const int row = blockIdx.y * 32 + threadIdx.y;
+  if (row < M && col < N) {
+    float acc = 0.0f;
+    for (int k = 0; k < K; ++k) acc += A[row * K + k] * B[k * N + col];
+    C[row * N + col] = acc;
+  }
+}
+
 struct Plan {
   std::string name, variant, grid, block;
   kf::KernelInfo ki;
@@ -84,6 +97,10 @@ static Plan make_plan(int version, const std::string& cfg, const Problem& p, cub
     case 1:
       if (!cfg.empty()) return bad_cfg();
       return kernel_plan("v1_naive", "-", sgemm_naive, dim3(cdiv(p.M, 32), cdiv(p.N, 32)),
+                         dim3(32, 32), p);
+    case 2:
+      if (!cfg.empty()) return bad_cfg();
+      return kernel_plan("v2_coalesced", "-", sgemm_coalesced, dim3(cdiv(p.N, 32), cdiv(p.M, 32)),
                          dim3(32, 32), p);
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
