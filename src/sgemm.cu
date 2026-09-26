@@ -46,6 +46,26 @@ __global__ void sgemm_coalesced(int M, int N, int K, const float* __restrict__ A
   }
 }
 
+// v3: T x T output tile per block; A and B tiles staged in shared memory, each global
+// element loaded once per tile instead of once per output.
+template <int T>
+__global__ void sgemm_smem(int M, int N, int K, const float* __restrict__ A,
+                           const float* __restrict__ B, float* __restrict__ C) {
+  __shared__ float As[T][T];
+  __shared__ float Bs[T][T];
+  const int tx = threadIdx.x, ty = threadIdx.y;
+  const int row = blockIdx.y * T + ty, col = blockIdx.x * T + tx;
+  float acc = 0.0f;
+  for (int k0 = 0; k0 < K; k0 += T) {
+    As[ty][tx] = (row < M && k0 + tx < K) ? A[row * K + k0 + tx] : 0.0f;
+    Bs[ty][tx] = (k0 + ty < K && col < N) ? B[(k0 + ty) * N + col] : 0.0f;
+    __syncthreads();
+    for (int k = 0; k < T; ++k) acc += As[ty][k] * Bs[k][tx];
+    __syncthreads();
+  }
+  if (row < M && col < N) C[row * N + col] = acc;
+}
+
 struct Plan {
   std::string name, variant, grid, block;
   kf::KernelInfo ki;
@@ -75,6 +95,12 @@ static Plan kernel_plan(const std::string& name, const std::string& variant, Ker
   return pl;
 }
 
+template <int T>
+static Plan smem_plan(const Problem& p) {
+  return kernel_plan("v3_smem_tiling", "T=" + std::to_string(T), sgemm_smem<T>,
+                     dim3(cdiv(p.N, T), cdiv(p.M, T)), dim3(T, T), p);
+}
+
 static Plan make_plan(int version, const std::string& cfg, const Problem& p, cublasHandle_t h) {
   auto bad_cfg = [&]() -> Plan {
     std::fprintf(stderr, "unknown --cfg '%s' for version %d\n", cfg.c_str(), version);
@@ -102,6 +128,11 @@ static Plan make_plan(int version, const std::string& cfg, const Problem& p, cub
       if (!cfg.empty()) return bad_cfg();
       return kernel_plan("v2_coalesced", "-", sgemm_coalesced, dim3(cdiv(p.N, 32), cdiv(p.M, 32)),
                          dim3(32, 32), p);
+    case 3:
+      if (cfg.empty() || cfg == "32") return smem_plan<32>(p);
+      if (cfg == "16") return smem_plan<16>(p);
+      if (cfg == "8") return smem_plan<8>(p);
+      return bad_cfg();
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
