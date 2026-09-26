@@ -56,12 +56,38 @@ From `results/stage1/patterns.csv`. Percentages are of 1530 GB/s (achievable) an
 | aos_sum | 0.866304 | 1549.3 | 101.3 | 86.5 |
 | soa_sum | 0.866304 | 1549.3 | 101.3 | 86.5 |
 
+### How effective bandwidth is counted
+
+Effective bandwidth = useful bytes / median time. Useful bytes are the bytes the algorithm must move once: every 4-byte element the kernel reads that it uses, plus every 4-byte element it writes. Bytes that the hardware moves but the kernel does not use (the rest of a 32-byte sector, re-fetches) are not counted, so a pattern that wastes DRAM traffic shows a lower effective bandwidth. The per-pattern useful bytes are in the table above (`bytes` column of `results/stage1/patterns.csv`).
+
+The second estimate (`scripts/sector_model.py`, output `results/stage1/sector_model.csv`) counts DRAM bytes under a 32-byte sector model: DRAM transfers whole 32-byte sectors (8 elements); a sector is fetched once each time the pattern touches it, with no L2 reuse between strided passes (each pass spans the whole 1 GiB input, 8x the 128 MiB L2) and full reuse between neighbouring warps within a pass. Writes are contiguous in every pattern and count at their useful size. The model is an estimate from the access pattern, not a measurement; DRAM byte counters are pending (see `docs/progress.md`).
+
+| Pattern | Useful bytes | Model DRAM bytes | Model / useful | Effective GB/s (useful) | Model DRAM GB/s |
+|---|---|---|---|---|---|
+| contiguous | 2147483648 | 2147483648 | 1.000 | 1493.7 | 1493.7 |
+| stride 1 | 2147483648 | 2147483648 | 1.000 | 1491.6 | 1491.6 |
+| stride 2 | 2147483648 | 3221225472 | 1.500 | 1019.0 | 1528.5 |
+| stride 4 | 2147483648 | 5368709120 | 2.500 | 621.0 | 1552.5 |
+| stride 8 | 2147483648 | 9663676416 | 4.500 | 352.2 | 1585.0 |
+| stride 16 | 2147483648 | 9663676416 | 4.500 | 355.9 | 1601.7 |
+| stride 32 | 2147483648 | 9663676416 | 4.500 | 353.6 | 1591.3 |
+| stride 64 | 2147483648 | 9663676416 | 4.500 | 250.1 | 1125.3 |
+| gather | 3221225472 | 10737418240 | 3.333 | 180.5 | 601.6 |
+| offset 1 to 31 | 2147483648 | 2147483680 | 1.000 | 1485.2 | 1485.2 |
+| aos_x | 536870912 | 1342177280 | 2.500 | 618.3 | 1545.7 |
+| soa_x | 536870912 | 536870912 | 1.000 | 1489.5 | 1489.5 |
+| aos_sum / soa_sum | 1342177280 | 1342177280 | 1.000 | 1549.3 | 1549.3 |
+
+Model details: strided with stride S reads the input in S passes; for S <= 8 each pass touches every sector (read bytes 4 S n), for S >= 8 every element is in its own sector (read bytes 32 n). Gather reads the index stream (4 n) plus one sector per random element (32 n). aos_x touches every sector of the 16-byte struct array (16 n).
+
 Plots: `results/stage1/stride.png`, `results/stage1/offset.png`, `results/stage1/patterns.png`.
 
 ## Observations
 
 - Strided reads: effective bandwidth drops by 31.7% from stride 1 to 2 (1491.6 to 1019.0 GB/s), by 39.1% from 2 to 4, and by 43.3% from 4 to 8. Strides 8, 16, and 32 are within 1.1% of each other (352.2 to 355.9 GB/s). Stride 64 is 29.3% below stride 32 (250.1 GB/s) and has the largest spread (stddev 0.138 ms, min 8.180 ms vs median 8.587 ms).
 - Median time at stride 2 is 1.46x stride 1, at stride 4 2.40x, and at strides 8 to 32 4.19x to 4.23x.
+- A reads-only sector-waste prediction scales the time by the read over-fetch alone: 2x at stride 2 and 8x at stride 8. The measured time ratios to stride 1 are 1.46x and 4.23x. The difference comes from the write stream, which is half of the stride-1 traffic and does not grow with stride: with writes included, the sector model gives total DRAM traffic of 1.5x (stride 2) and 4.5x (stride 8) the stride-1 traffic. Measured times are 2.4% below the 1.5x model at stride 2 and 5.9% below the 4.5x model at stride 8, so the model DRAM rates are 1528.5 GB/s (stride 2) and 1585.0 GB/s (stride 8), against 1491.6 GB/s at stride 1.
+- Under the sector model, strides 4 to 32 and aos_x imply DRAM rates of 1545.7 to 1601.7 GB/s, above the 1530 GB/s achievable figure; stride 64 implies 1125.3 GB/s and gather 601.6 GB/s.
 - Random gather reaches 180.5 GB/s of useful traffic, 12.1% of contiguous.
 - Every offset from 1 to 31 gives the same median, 1.445888 ms, 0.43% slower than offset 0 (1.439744 ms) and 0.57% slower than offset 32 (1.437696 ms). Both values are integer multiples of 1.024 us (1412 and 1404 steps), the timing pattern recorded in Stage 0.
 - aos_x takes the same time as aos_sum (0.868352 vs 0.866304 ms) and 2.41x the time of soa_x. soa_sum and aos_sum have identical medians.
