@@ -62,22 +62,22 @@ Commits (oldest first):
 |---|---|
 | 457b314 | stage0: initial repo, README, and environment report script |
 | 3568f51 | stage0: CMake build, CUDA error checking, event timer, device info smoke test |
-| da61d52 | stage0: add slurm batch script for gpu runs |
-| 91b301e | stage0: add vector add with cpu check and event timing |
-| e44a522 | stage0: add csv result writer and write vector add results to results/stage0 |
-| 08ac004 | stage0: add optional l2 flush before each timed rep |
-| 76c0a13 | stage0: add batched launches per timed rep and flag launch-bound sizes |
-| bf3910c | stage0: generalize csv rows and add shared bench harness with occupancy info |
-| 94a5eab | stage0: add ncu counter access probe script |
-| d23afd2 | stage0: add saxpy with double-precision cpu reference |
-| 2102290 | stage0: add device-to-device copy kernel and cudaMemcpy measurement |
-| d7228a4 | stage0: add size sweep script for copy and vector add |
-| 3404d22 | stage0: add fixed-size baseline script |
-| 2eb576c | stage0: add plot script and csv-to-markdown table tool |
-| 3bb09bc | stage0: add size sweep and fixed-size baseline results with plots |
-| 85c0a67 | stage0: add counter-free kernel report script (ptxas, sass opcode counts) |
-| 50f54c3 | stage0: add ptxas and sass reports for stage 0 kernels |
-| 212944f | stage0: add nsight systems kernel summary script and vector add traces |
+| a5e7244 | stage0: add slurm batch script for gpu runs |
+| f3bf10c | stage0: add vector add with cpu check and event timing |
+| 4663ef6 | stage0: add csv result writer and write vector add results to results/stage0 |
+| 72a952e | stage0: add optional l2 flush before each timed rep |
+| cac08c0 | stage0: add batched launches per timed rep and flag launch-bound sizes |
+| d0ab392 | stage0: generalize csv rows and add shared bench harness with occupancy info |
+| 5b50251 | stage0: add ncu counter access probe script |
+| cb858ea | stage0: add saxpy with double-precision cpu reference |
+| 2157784 | stage0: add device-to-device copy kernel and cudaMemcpy measurement |
+| 19ea611 | stage0: add size sweep script for copy and vector add |
+| f22023c | stage0: add fixed-size baseline script |
+| a12658e | stage0: add plot script and csv-to-markdown table tool |
+| c9af4b4 | stage0: add size sweep and fixed-size baseline results with plots |
+| ea708af | stage0: add counter-free kernel report script (ptxas, sass opcode counts) |
+| 8576a8d | stage0: add ptxas and sass reports for stage 0 kernels |
+| ff3804c | stage0: add nsight systems kernel summary script and vector add traces |
 
 Headline results (2 GiB total data, L2 flushed, jobs 24037480 and 24037481):
 
@@ -99,11 +99,11 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| 021e2ef | stage1: add memory access pattern kernels with exact checks |
-| 4d8f802 | stage1: add access pattern run script |
-| 364efe8 | stage1: add stage 1 plots to plot script |
-| 207f0a8 | stage1: add access pattern results, plots, and ptxas/sass reports |
-| b9577c6 | stage1: add stage 1 doc |
+| 351a561 | stage1: add memory access pattern kernels with exact checks |
+| c1617bf | stage1: add access pattern run script |
+| a0b9d1b | stage1: add stage 1 plots to plot script |
+| 7a8eaee | stage1: add access pattern results, plots, and ptxas/sass reports |
+| 1fbab0c | stage1: add stage 1 doc |
 
 Headline results (2^28 uint32 elements, L2 flushed, job 24037839, % of 1530 GB/s achievable):
 
@@ -129,17 +129,17 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| 153059c | stage2: add reduction harness and v1 global atomicAdd reduction |
-| 70f5755 | stage2: add v2 shared-memory tree reduction with interleaved addressing |
-| 63424fc | stage2: add v3 reduction with sequential addressing |
-| 65de076 | stage2: add v4 reduction with first add during global load |
-| 4cb46ca | stage2: add v5 reduction with warp-shuffle last warp |
-| f6b01fd | stage2: add v6 grid-stride reduction with multiple elements per thread |
-| f005b9d | stage2: add v7 cub DeviceReduce::Sum reference |
-| 22384f0 | stage2: add reduction run script |
-| f249a4b | stage2: add stage 2 plots to plot script |
-| 2261908 | stage2: add reduction results, plots, and ptxas/sass reports |
-| e45b8df | stage2: add stage 2 doc |
+| a6a7b0d | stage2: add reduction harness and v1 global atomicAdd reduction |
+| 388aaa0 | stage2: add v2 shared-memory tree reduction with interleaved addressing |
+| f37e88b | stage2: add v3 reduction with sequential addressing |
+| 6723538 | stage2: add v4 reduction with first add during global load |
+| 251e63d | stage2: add v5 reduction with warp-shuffle last warp |
+| 279c77b | stage2: add v6 grid-stride reduction with multiple elements per thread |
+| f5f2818 | stage2: add v7 cub DeviceReduce::Sum reference |
+| af64208 | stage2: add reduction run script |
+| 480ec10 | stage2: add stage 2 plots to plot script |
+| f322a8b | stage2: add reduction results, plots, and ptxas/sass reports |
+| 3f89fd4 | stage2: add stage 2 doc |
 Headline results (2^28 floats, L2 flushed, job 24038225):
 
 | Version | Median (ms) | GB/s | % of 1530 achievable | % of CUB |
@@ -166,17 +166,17 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| 1908f4e | stage3: add sgemm harness with cublas and cpu checks, and v1 naive kernel |
-| 4f5aac8 | stage3: add v2 sgemm with coalesced global access |
-| 205527b | stage3: add v3 sgemm with shared-memory tiling |
-| fbbb26a | stage3: add v4 sgemm with 1d register blocking |
-| 3d96368 | stage3: add v5 sgemm with 2d register blocking |
-| ac28db7 | stage3: add v6 sgemm with float4 vectorized loads and stores |
-| 89ebc87 | stage3: add sgemm run script |
-| c15b31d | stage3: add tile and block size sweep script |
-| d8cbda5 | stage3: add stage 3 plots to plot script |
-| 6bb25b3 | stage3: add sgemm and tile sweep results, plots, and ptxas/sass reports |
-| 89600ee | stage3: add stage 3 doc |
+| fbfab08 | stage3: add sgemm harness with cublas and cpu checks, and v1 naive kernel |
+| 0975994 | stage3: add v2 sgemm with coalesced global access |
+| aac4379 | stage3: add v3 sgemm with shared-memory tiling |
+| 24b256f | stage3: add v4 sgemm with 1d register blocking |
+| 8a29417 | stage3: add v5 sgemm with 2d register blocking |
+| 91e8985 | stage3: add v6 sgemm with float4 vectorized loads and stores |
+| 40d52bc | stage3: add sgemm run script |
+| 975f8dd | stage3: add tile and block size sweep script |
+| ffd4536 | stage3: add stage 3 plots to plot script |
+| 7155dfb | stage3: add sgemm and tile sweep results, plots, and ptxas/sass reports |
+| 1958fb4 | stage3: add stage 3 doc |
 Headline results (square M = N = K, warm, job 24038801; GFLOP/s and % of cuBLAS):
 
 | Version | 4096 | 8192 |
@@ -209,22 +209,22 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| abfcfc4 | stage3: add cublas fp32 verification tool |
-| 48dfcfe | stage3: record cublas fp32 verification results and kernel names |
-| 7de9841 | stage1: add 32-byte sector model estimate of dram bytes |
-| 5202a95 | stage1: document effective bandwidth counting and sector model comparison |
-| 71f272f | stage4: add --warmup and --reps flags with project minimums |
-| 9a0df71 | stage4: add clock and power logged sgemm and streaming run script |
-| 221fc4a | stage4: add clock log summary script |
-| c6cad16 | stage4: add first-pass mode and load-only baseline to reduction for tree-phase timing |
-| 44c894a | stage4: add reduction tree-phase run script |
-| 7d84d7b | stage4: add naive sgemm size sweep script |
-| d1a4e23 | stage4: add clock, power, and temperature logs for sgemm and streaming runs |
-| 36d668e | stage4: add reduction tree-phase and naive sgemm sweep results |
-| afbed32 | stage4: add roofline script with arithmetic intensity table |
-| 2c9b6db | stage4: add stage 4 plots to plot script |
-| 1266ef8 | stage4: add roofline table and plots |
-| 0006548 | stage4: add roofline and resource analysis doc for stages 4 to 6 |
+| 23e4566 | stage3: add cublas fp32 verification tool |
+| d94b192 | stage3: record cublas fp32 verification results and kernel names |
+| 9f94eaf | stage1: add 32-byte sector model estimate of dram bytes |
+| ff22eb8 | stage1: document effective bandwidth counting and sector model comparison |
+| 71dffd5 | stage4: add --warmup and --reps flags with project minimums |
+| 912c1b1 | stage4: add clock and power logged sgemm and streaming run script |
+| 820b0ef | stage4: add clock log summary script |
+| 8389248 | stage4: add first-pass mode and load-only baseline to reduction for tree-phase timing |
+| 7c4983a | stage4: add reduction tree-phase run script |
+| 484a86d | stage4: add naive sgemm size sweep script |
+| 549d316 | stage4: add clock, power, and temperature logs for sgemm and streaming runs |
+| 6b47949 | stage4: add reduction tree-phase and naive sgemm sweep results |
+| 66da8f1 | stage4: add roofline script with arithmetic intensity table |
+| 14dd808 | stage4: add stage 4 plots to plot script |
+| 2ba10dc | stage4: add roofline table and plots |
+| 63bc91e | stage4: add roofline and resource analysis doc for stages 4 to 6 |
 Headline results (details in `docs/roofline.md`):
 
 | Item | Result |
@@ -250,13 +250,13 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| 991c2e3 | stage7: add python benchmark harness matching the c++ harness |
-| ce01d93 | stage7: add autotuned triton kernels for vector add, softmax, rmsnorm, matmul |
-| 8c25580 | stage7: add triton driver with correctness checks, ir dumps, and autotune records |
-| 31fe0cc | stage7: add stage 7 run script |
-| 388dd41 | stage7: ignore cubin build outputs |
-| 395bdc0 | stage7: add triton vector add, softmax, matmul results, autotune records, and matmul ir dumps (job 24047985) |
-| e3ceb1a | stage7: add stage 7 doc |
+| 13568a9 | stage7: add python benchmark harness matching the c++ harness |
+| 91c67ce | stage7: add autotuned triton kernels for vector add, softmax, rmsnorm, matmul |
+| bd7ba03 | stage7: add triton driver with correctness checks, ir dumps, and autotune records |
+| 4a5dd7c | stage7: add stage 7 run script |
+| e028b8c | stage7: ignore cubin build outputs |
+| 184a60d | stage7: add triton vector add, softmax, matmul results, autotune records, and matmul ir dumps (job 24047985) |
+| 8dc7af6 | stage7: add stage 7 doc |
 
 Headline results (job 24047985, matmul warm, GFLOP/s and % of `cublasSgemm` in the same job):
 
@@ -283,12 +283,12 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| 8d8eeb3 | stage8: add cuda softmax and rmsnorm kernels as a shared library |
-| 6b611a7 | stage8: add ml kernel driver with fp64 reference checks and run script |
-| fec3388 | stage8: add softmax and rmsnorm results for cuda, triton, pytorch (job 24048749) |
-| 4587723 | stage8: add row lengths 1001 and 4099 to cover the cuda scalar path |
-| 3e97e66 | stage8: add results for row lengths 1001 and 4099 (job 24049119) |
-| a4eb6e8 | stage8: add stage 8 doc |
+| e47e1a5 | stage8: add cuda softmax and rmsnorm kernels as a shared library |
+| 138cfb7 | stage8: add ml kernel driver with fp64 reference checks and run script |
+| 7368a42 | stage8: add softmax and rmsnorm results for cuda, triton, pytorch (job 24048749) |
+| eff6a7e | stage8: add row lengths 1001 and 4099 to cover the cuda scalar path |
+| 22258ff | stage8: add results for row lengths 1001 and 4099 (job 24049119) |
+| 9f643b0 | stage8: add stage 8 doc |
 
 Headline results (2^26 FP32 elements per shape, L2 flushed, jobs 24048749 and 24049119, GB/s and % of 1530):
 
@@ -319,13 +319,13 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| c3dba57 | stage10: add occupancy api query to the ml kernel library |
-| 30a6d31 | stage10: add capstone driver for triton vs cuda matmul and softmax with sass and occupancy |
-| a49147a | stage10: add capstone run script with clock logging |
-| 6658ba1 | stage10: write cuda sgemm sass counts in the capstone run script |
-| 84a3e7d | stage10: add capstone results, clocks, sass and occupancy data (job 24049608) |
-| 56401e9 | stage10: add capstone doc |
-| c36855c | stage10: record final counter probe results and stop further probes |
+| 13c609d | stage10: add occupancy api query to the ml kernel library |
+| 4e61be0 | stage10: add capstone driver for triton vs cuda matmul and softmax with sass and occupancy |
+| c82c8ee | stage10: add capstone run script with clock logging |
+| b797103 | stage10: write cuda sgemm sass counts in the capstone run script |
+| 0534c5f | stage10: add capstone results, clocks, sass and occupancy data (job 24049608) |
+| 72b7409 | stage10: add capstone doc |
+| 6d0f326 | stage10: record final counter probe results and stop further probes |
 
 Headline results (job 24049608, matmul warm, GFLOP/s, % of `cublasSgemm` in the same job, median SM clock):
 
@@ -352,13 +352,13 @@ Commits:
 
 | Hash | Message |
 |---|---|
-| ca15993 | stage11: pin python environment in requirements.txt |
-| f4c9b9e | stage11: add docs index linking every stage doc |
-| 656e077 | stage11: update readme with status, environment, all stage results, and reproduction steps |
+| f8ffd4d | stage11: pin python environment in requirements.txt |
+| fde4bb5 | stage11: add docs index linking every stage doc |
+| a7bad83 | stage11: update readme with status, environment, all stage results, and reproduction steps |
 
 - README: status, environment, results for every stage, repository layout, and reproduction steps (modules, venv from `requirements.txt`, build, per-stage `sbatch` commands).
 - `docs/index.md` links every stage doc, the roofline doc, the capstone, and this log.
-- Clean-clone build: job 24050475 (2026-09-26, `high`) cloned the repository at 656e077 into a temporary directory, configured and built all 9 targets (`device_info`, `vector_add`, `saxpy`, `copy`, `mem_patterns`, `reduce`, `sgemm`, `cublas_fp32_check`, `libkf_ml.so`) with no errors, and ran two smoke tests: `vector_add 16777216 --flush` PASS (1536.0 GB/s), `sgemm 1000 --version 6` PASS (12432.9 GFLOP/s). The Python environment was not reinstalled in that job.
+- Clean-clone build: job 24050475 (2026-09-26, `high`) cloned the repository at a7bad83 into a temporary directory, configured and built all 9 targets (`device_info`, `vector_add`, `saxpy`, `copy`, `mem_patterns`, `reduce`, `sgemm`, `cublas_fp32_check`, `libkf_ml.so`) with no errors, and ran two smoke tests: `vector_add 16777216 --flush` PASS (1536.0 GB/s), `sgemm 1000 --version 6` PASS (12432.9 GFLOP/s). The Python environment was not reinstalled in that job.
 
 Hive usage from 2026-09-26 on: one GPU job at a time on `high`, login-node builds with at most `-j 2`, no counter probes.
 
