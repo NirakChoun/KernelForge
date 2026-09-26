@@ -1,0 +1,147 @@
+// Stage 2: float sum reduction. One version per --version; see docs/stage2.md.
+#include <cmath>
+#include <cstdint>
+#include <functional>
+#include <random>
+#include <string>
+#include <vector>
+#include "kf/bench.cuh"
+
+constexpr int kBlock = 256;
+
+// v1: one atomicAdd per element, all on the same address.
+__global__ void reduce_atomic(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  const size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+  if (i < n) atomicAdd(out, in[i]);
+}
+
+struct Plan {
+  std::string name, variant = "-", grid = "-", block = "-";
+  kf::KernelInfo ki;
+  std::function<void()> run;
+};
+
+
+static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] float* a,
+                      [[maybe_unused]] float* b, float* result) {
+  switch (version) {
+    case 1: {
+      Plan p;
+      p.name = "v1_atomic";
+      const unsigned grid = static_cast<unsigned>((n + kBlock - 1) / kBlock);
+      p.grid = std::to_string(grid);
+      p.block = std::to_string(kBlock);
+      p.ki = kf::kernel_info(reduce_atomic, kBlock);
+      // The zeroing of the result is part of each timed launch.
+      p.run = [=] {
+        CUDA_CHECK(cudaMemsetAsync(result, 0, sizeof(float)));
+        reduce_atomic<<<grid, kBlock>>>(in, result, n);
+      };
+      return p;
+    }
+    default:
+      std::fprintf(stderr, "unknown --version %d\n", version);
+      std::exit(2);
+  }
+}
+
+static float run_once(const Plan& p, const float* result) {
+  p.run();
+  CUDA_CHECK_LAST();
+  CUDA_CHECK(cudaDeviceSynchronize());
+  float got = 0;
+  CUDA_CHECK(cudaMemcpy(&got, result, sizeof(float), cudaMemcpyDeviceToHost));
+  return got;
+}
+
+int main(int argc, char** argv) {
+  const kf::BenchArgs args =
+      kf::parse_bench_args(argc, argv, "results/stage2/reduce.csv", "--version V");
+  int version = 0;
+  for (size_t i = 0; i < args.rest.size(); ++i) {
+    if (args.rest[i] == "--version" && i + 1 < args.rest.size()) version = std::stoi(args.rest[++i]);
+    else {
+      std::fprintf(stderr, "unknown argument: %s\n", args.rest[i].c_str());
+      return 2;
+    }
+  }
+  const size_t n = args.n;
+  if (n > (size_t(1) << 31)) {
+    std::fprintf(stderr, "n must be <= 2^31\n");
+    return 2;
+  }
+  const size_t bytes = n * sizeof(float);
+  const size_t partials = (n + kBlock - 1) / kBlock + 1;
+  float *d_in, *d_a, *d_b, *d_result;
+  CUDA_CHECK(cudaMalloc(&d_in, bytes));
+  CUDA_CHECK(cudaMalloc(&d_a, partials * sizeof(float)));
+  CUDA_CHECK(cudaMalloc(&d_b, partials * sizeof(float)));
+  CUDA_CHECK(cudaMalloc(&d_result, sizeof(float)));
+  const Plan plan = make_plan(version, d_in, n, d_a, d_b, d_result);
+  std::printf("version=%s variant=%s n=%zu grid=%s block=%s\n", plan.name.c_str(),
+              plan.variant.c_str(), n, plan.grid.c_str(), plan.block.c_str());
+  std::vector<float> h(n);
+  std::mt19937 rng(12345);
+
+  // Test 1, exact: values in {-1, 0, +1} with fewer than 2^24 nonzeros. Every partial
+  // sum in any order is an integer below 2^24 and exactly representable, so any
+  // correct summation order must return the exact integer sum.
+  const double p_nonzero = std::min(1.0, double(1 << 23) / n);
+  std::uniform_real_distribution<double> coin(0.0, 1.0);
+  int64_t exact = 0, nonzero = 0;
+  for (size_t i = 0; i < n; ++i) {
+    float v = 0.0f;
+    if (coin(rng) < p_nonzero) v = (rng() & 1) ? 1.0f : -1.0f;
+    h[i] = v;
+    exact += static_cast<int64_t>(v);
+    nonzero += v != 0.0f;
+  }
+  if (nonzero >= (1 << 24)) {
+    std::fprintf(stderr, "exact test setup error: %lld nonzeros\n", (long long)nonzero);
+    return 1;
+  }
+  CUDA_CHECK(cudaMemcpy(d_in, h.data(), bytes, cudaMemcpyHostToDevice));
+  const float got_exact = run_once(plan, d_result);
+  const bool pass_exact = static_cast<double>(got_exact) == static_cast<double>(exact);
+  std::printf("correctness exact: %s (got %.1f expected %lld, nonzeros %lld)\n",
+              pass_exact ? "PASS" : "FAIL", got_exact, (long long)exact, (long long)nonzero);
+
+  // Test 2, tolerance: uniform [-1, 1). Reference is the double sum. Bound
+  // 2 * ceil(log2 n) * 2^-24 * sum|x| covers tree orders of depth log2 n with margin;
+  // v1's sequential atomic order has a larger worst-case bound and is held to the
+  // same limit empirically.
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+  double ref = 0.0, abs_sum = 0.0;
+  for (size_t i = 0; i < n; ++i) {
+    h[i] = dist(rng);
+    ref += h[i];
+    abs_sum += std::fabs(h[i]);
+  }
+  const double tol = 2.0 * std::ceil(std::log2(double(n) > 1 ? double(n) : 2.0)) * std::ldexp(1.0, -24) * abs_sum;
+  CUDA_CHECK(cudaMemcpy(d_in, h.data(), bytes, cudaMemcpyHostToDevice));
+  const float got = run_once(plan, d_result);
+  const double err = std::fabs(static_cast<double>(got) - ref);
+  const bool pass_tol = err <= tol;
+  std::printf("correctness tolerance: %s (got %.6f ref %.6f abs_err %.3g tol %.3g)\n",
+              pass_tol ? "PASS" : "FAIL", got, ref, err, tol);
+
+  const bool pass = pass_exact && pass_tol;
+  if (pass) {
+    kf::Record r;
+    r.kernel = plan.name;
+    r.variant = plan.variant;
+    r.n = n;
+    r.bytes = static_cast<double>(bytes);  // input read once; partial sums not counted
+    r.flops = static_cast<double>(n - 1);
+    r.grid = plan.grid;
+    r.block = plan.block;
+    r.ki = plan.ki;
+    r.s = kf::bench(plan.run, args);
+    kf::report(r, args);
+  }
+  CUDA_CHECK(cudaFree(d_in));
+  CUDA_CHECK(cudaFree(d_a));
+  CUDA_CHECK(cudaFree(d_b));
+  CUDA_CHECK(cudaFree(d_result));
+  return pass ? 0 : 1;
+}
