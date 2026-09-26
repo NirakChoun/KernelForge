@@ -48,3 +48,6 @@ kf_add_bench(reduce src/reduce.cu)
 find_package(CUDAToolkit REQUIRED)
 kf_add_bench(sgemm src/sgemm.cu)
 target_link_libraries(sgemm PRIVATE CUDA::cublas)
+
+kf_add_bench(cublas_fp32_check src/cublas_fp32_check.cu)
+target_link_libraries(cublas_fp32_check PRIVATE CUDA::cublas)
