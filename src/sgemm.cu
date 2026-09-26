@@ -138,6 +138,88 @@ __global__ void __launch_bounds__((BM / TM) * (BN / TN))
     }
 }
 
+// v6: v5 with 128-bit accesses. Global A and B tiles load as float4, A is stored
+// transposed in shared memory (As[k][m]) so each thread's TM A values are contiguous,
+// and shared reads and C stores are float4. Vec = false is the scalar fallback used
+// when K or N is not a multiple of 4 (float4 rows would be misaligned).
+template <int BM, int BN, int BK, int TM, int TN, bool Vec>
+__global__ void __launch_bounds__((BM / TM) * (BN / TN))
+    sgemm_vec(int M, int N, int K, const float* __restrict__ A, const float* __restrict__ B,
+              float* __restrict__ C) {
+  static_assert(TM % 4 == 0 && TN % 4 == 0 && BK % 4 == 0 && BN % 4 == 0, "float4 tiles");
+  constexpr int NT = (BM / TM) * (BN / TN);
+  __shared__ __align__(16) float As[BK * BM];
+  __shared__ __align__(16) float Bs[BK * BN];
+  const int t_col = threadIdx.x % (BN / TN), t_row = threadIdx.x / (BN / TN);
+  const int b_row = blockIdx.y * BM, b_col = blockIdx.x * BN;
+  float acc[TM][TN] = {};
+  float reg_m[TM], reg_n[TN];
+  const float4 zero = make_float4(0.f, 0.f, 0.f, 0.f);
+  for (int k0 = 0; k0 < K; k0 += BK) {
+    for (int i = threadIdx.x; i < BM * BK / 4; i += NT) {
+      const int r = i / (BK / 4), c = (i % (BK / 4)) * 4;
+      const int gr = b_row + r, gc = k0 + c;
+      float4 v;
+      if (Vec) {
+        v = (gr < M && gc < K) ? *reinterpret_cast<const float4*>(&A[gr * K + gc]) : zero;
+      } else {
+        const bool ok = gr < M;
+        v.x = ok && gc < K ? A[gr * K + gc] : 0.f;
+        v.y = ok && gc + 1 < K ? A[gr * K + gc + 1] : 0.f;
+        v.z = ok && gc + 2 < K ? A[gr * K + gc + 2] : 0.f;
+        v.w = ok && gc + 3 < K ? A[gr * K + gc + 3] : 0.f;
+      }
+      As[(c + 0) * BM + r] = v.x;
+      As[(c + 1) * BM + r] = v.y;
+      As[(c + 2) * BM + r] = v.z;
+      As[(c + 3) * BM + r] = v.w;
+    }
+    for (int i = threadIdx.x; i < BK * BN / 4; i += NT) {
+      const int r = i / (BN / 4), c = (i % (BN / 4)) * 4;
+      const int gr = k0 + r, gc = b_col + c;
+      float4 v;
+      if (Vec) {
+        v = (gr < K && gc < N) ? *reinterpret_cast<const float4*>(&B[gr * N + gc]) : zero;
+      } else {
+        const bool ok = gr < K;
+        v.x = ok && gc < N ? B[gr * N + gc] : 0.f;
+        v.y = ok && gc + 1 < N ? B[gr * N + gc + 1] : 0.f;
+        v.z = ok && gc + 2 < N ? B[gr * N + gc + 2] : 0.f;
+        v.w = ok && gc + 3 < N ? B[gr * N + gc + 3] : 0.f;
+      }
+      *reinterpret_cast<float4*>(&Bs[r * BN + c]) = v;
+    }
+    __syncthreads();
+    for (int d = 0; d < BK; ++d) {
+      for (int i = 0; i < TM; i += 4) {
+        const float4 m = *reinterpret_cast<const float4*>(&As[d * BM + t_row * TM + i]);
+        reg_m[i] = m.x, reg_m[i + 1] = m.y, reg_m[i + 2] = m.z, reg_m[i + 3] = m.w;
+      }
+      for (int j = 0; j < TN; j += 4) {
+        const float4 v = *reinterpret_cast<const float4*>(&Bs[d * BN + t_col * TN + j]);
+        reg_n[j] = v.x, reg_n[j + 1] = v.y, reg_n[j + 2] = v.z, reg_n[j + 3] = v.w;
+      }
+      for (int i = 0; i < TM; ++i)
+        for (int j = 0; j < TN; ++j) acc[i][j] += reg_m[i] * reg_n[j];
+    }
+    __syncthreads();
+  }
+  for (int i = 0; i < TM; ++i) {
+    const int r = b_row + t_row * TM + i;
+    if (r >= M) continue;
+    for (int j = 0; j < TN; j += 4) {
+      const int c = b_col + t_col * TN + j;
+      if (Vec && c < N) {
+        *reinterpret_cast<float4*>(&C[r * N + c]) =
+            make_float4(acc[i][j], acc[i][j + 1], acc[i][j + 2], acc[i][j + 3]);
+      } else if (!Vec) {
+        for (int q = 0; q < 4; ++q)
+          if (c + q < N) C[r * N + c + q] = acc[i][j + q];
+      }
+    }
+  }
+}
+
 struct Plan {
   std::string name, variant, grid, block;
   kf::KernelInfo ki;
@@ -235,6 +317,17 @@ static Plan make_plan(int version, const std::string& cfg, const Problem& p, cub
       if (cfg == "64x64x8x4x4") return blocktile_2d_plan<64, 64, 8, 4, 4>(p);
       if (cfg == "128x128x16x8x8") return blocktile_2d_plan<128, 128, 16, 8, 8>(p);
       return bad_cfg();
+    case 6: {
+      if (!cfg.empty()) return bad_cfg();
+      constexpr int BM = 128, BN = 128, BK = 8, TM = 8, TN = 8;
+      const dim3 grid(cdiv(p.N, BN), cdiv(p.M, BM)), block((BM / TM) * (BN / TN));
+      const std::string v = "BMxBNxBKxTMxTN=128x128x8x8x8";
+      if (p.K % 4 == 0 && p.N % 4 == 0)
+        return kernel_plan("v6_vectorized", v + ";float4", sgemm_vec<BM, BN, BK, TM, TN, true>,
+                           grid, block, p);
+      return kernel_plan("v6_vectorized", v + ";scalar_fallback",
+                         sgemm_vec<BM, BN, BK, TM, TN, false>, grid, block, p);
+    }
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
