@@ -104,6 +104,18 @@ __global__ void reduce_grid_stride(const float* __restrict__ in, float* __restri
   if (threadIdx.x == 0) out[blockIdx.x] = v;
 }
 
+// Baseline for the tree-phase microbenchmark (--first-pass --version 0): the same
+// global load into shared memory and barrier as v2/v3, with no tree. Writes the
+// block's first element so the load cannot be removed.
+__global__ void reduce_load_only(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  __shared__ float s[kBlock];
+  const unsigned tid = threadIdx.x;
+  const size_t i = static_cast<size_t>(blockIdx.x) * kBlock + tid;
+  s[tid] = i < n ? in[i] : 0.0f;
+  __syncthreads();
+  if (tid == 0) out[blockIdx.x] = s[0];
+}
+
 struct Plan {
   std::string name, variant = "-", grid = "-", block = "-";
   kf::KernelInfo ki;
@@ -208,6 +220,33 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
   }
 }
 
+// --first-pass: time only the first launch of a tiled version (v2 to v5), or the
+// load-only baseline (v0). Partial sums go to `a`; the caller checks them per block.
+static Plan first_pass_plan(int version, const float* in, size_t n, float* a, size_t* per_block) {
+  Plan p;
+  p.block = std::to_string(kBlock);
+  auto set = [&](const char* name, auto kernel, size_t pb) {
+    p.name = name;
+    p.variant = "first_pass";
+    *per_block = pb;
+    const unsigned grid = static_cast<unsigned>((n + pb - 1) / pb);
+    p.grid = std::to_string(grid);
+    p.ki = kf::kernel_info(kernel, kBlock);
+    p.run = [=] { kernel<<<grid, kBlock>>>(in, a, n); };
+  };
+  switch (version) {
+    case 0: set("v0_load_only", reduce_load_only, kBlock); break;
+    case 2: set("v2_interleaved", reduce_interleaved, kBlock); break;
+    case 3: set("v3_sequential", reduce_sequential, kBlock); break;
+    case 4: set("v4_first_add", reduce_first_add, 2 * kBlock); break;
+    case 5: set("v5_warp_shuffle", reduce_warp_shuffle, 2 * kBlock); break;
+    default:
+      std::fprintf(stderr, "--first-pass supports versions 0, 2, 3, 4, 5\n");
+      std::exit(2);
+  }
+  return p;
+}
+
 static float run_once(const Plan& p, const float* result) {
   p.run();
   CUDA_CHECK_LAST();
@@ -217,12 +256,60 @@ static float run_once(const Plan& p, const float* result) {
   return got;
 }
 
+// First-pass mode. Correctness: with values in {-1, 0, +1}, each block's partial sum
+// (or, for v0, its first element) is an exact small integer, checked for every block.
+static int run_first_pass(const kf::BenchArgs& args, int version, size_t n, float* d_in, float* d_a) {
+  size_t per_block = 0;
+  const Plan plan = first_pass_plan(version, d_in, n, d_a, &per_block);
+  const size_t blocks = (n + per_block - 1) / per_block;
+  std::printf("version=%s variant=%s n=%zu grid=%s block=%s\n", plan.name.c_str(),
+              plan.variant.c_str(), n, plan.grid.c_str(), plan.block.c_str());
+  std::vector<float> h(n), got(blocks);
+  std::mt19937 rng(12345);
+  for (size_t i = 0; i < n; ++i) h[i] = static_cast<float>(static_cast<int>(rng() % 3) - 1);
+  CUDA_CHECK(cudaMemcpy(d_in, h.data(), n * sizeof(float), cudaMemcpyHostToDevice));
+  plan.run();
+  CUDA_CHECK_LAST();
+  CUDA_CHECK(cudaDeviceSynchronize());
+  CUDA_CHECK(cudaMemcpy(got.data(), d_a, blocks * sizeof(float), cudaMemcpyDeviceToHost));
+  size_t errors = 0;
+  for (size_t b = 0; b < blocks; ++b) {
+    double want = 0;
+    if (version == 0) {
+      want = h[b * per_block];
+    } else {
+      for (size_t i = b * per_block; i < std::min(n, (b + 1) * per_block); ++i) want += h[i];
+    }
+    if (static_cast<double>(got[b]) != want) {
+      if (errors < 5) std::fprintf(stderr, "block %zu: got %.1f expected %.1f\n", b, got[b], want);
+      ++errors;
+    }
+  }
+  std::printf("correctness first-pass: %s (errors=%zu of %zu blocks)\n", errors ? "FAIL" : "PASS",
+              errors, blocks);
+  if (errors) return 1;
+  kf::Record r;
+  r.kernel = plan.name;
+  r.variant = plan.variant;
+  r.n = n;
+  r.bytes = static_cast<double>(n) * sizeof(float) + static_cast<double>(blocks) * sizeof(float);
+  r.flops = version == 0 ? 0.0 : static_cast<double>(n - blocks);
+  r.grid = plan.grid;
+  r.block = plan.block;
+  r.ki = plan.ki;
+  r.s = kf::bench(plan.run, args);
+  kf::report(r, args);
+  return 0;
+}
+
 int main(int argc, char** argv) {
   const kf::BenchArgs args =
-      kf::parse_bench_args(argc, argv, "results/stage2/reduce.csv", "--version V");
-  int version = 0;
+      kf::parse_bench_args(argc, argv, "results/stage2/reduce.csv", "--version V [--first-pass]");
+  int version = -1;
+  bool first_pass = false;
   for (size_t i = 0; i < args.rest.size(); ++i) {
     if (args.rest[i] == "--version" && i + 1 < args.rest.size()) version = std::stoi(args.rest[++i]);
+    else if (args.rest[i] == "--first-pass") first_pass = true;
     else {
       std::fprintf(stderr, "unknown argument: %s\n", args.rest[i].c_str());
       return 2;
@@ -240,6 +327,7 @@ int main(int argc, char** argv) {
   CUDA_CHECK(cudaMalloc(&d_a, partials * sizeof(float)));
   CUDA_CHECK(cudaMalloc(&d_b, partials * sizeof(float)));
   CUDA_CHECK(cudaMalloc(&d_result, sizeof(float)));
+  if (first_pass) return run_first_pass(args, version, n, d_in, d_a);
   const Plan plan = make_plan(version, d_in, n, d_a, d_b, d_result);
   std::printf("version=%s variant=%s n=%zu grid=%s block=%s\n", plan.name.c_str(),
               plan.variant.c_str(), n, plan.grid.c_str(), plan.block.c_str());
