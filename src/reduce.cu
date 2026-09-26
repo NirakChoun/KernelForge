@@ -30,6 +30,20 @@ __global__ void reduce_interleaved(const float* __restrict__ in, float* __restri
   if (tid == 0) out[blockIdx.x] = s[0];
 }
 
+// v3: sequential addressing. Active threads are the contiguous range tid < stride.
+__global__ void reduce_sequential(const float* __restrict__ in, float* __restrict__ out, size_t n) {
+  __shared__ float s[kBlock];
+  const unsigned tid = threadIdx.x;
+  const size_t i = static_cast<size_t>(blockIdx.x) * kBlock + tid;
+  s[tid] = i < n ? in[i] : 0.0f;
+  __syncthreads();
+  for (unsigned stride = kBlock / 2; stride > 0; stride >>= 1) {
+    if (tid < stride) s[tid] += s[tid + stride];
+    __syncthreads();
+  }
+  if (tid == 0) out[blockIdx.x] = s[0];
+}
+
 struct Plan {
   std::string name, variant = "-", grid = "-", block = "-";
   kf::KernelInfo ki;
@@ -93,6 +107,7 @@ static Plan make_plan(int version, const float* in, size_t n, [[maybe_unused]] f
       return p;
     }
     case 2: return tiled_plan("v2_interleaved", reduce_interleaved, kBlock, in, n, a, b, result);
+    case 3: return tiled_plan("v3_sequential", reduce_sequential, kBlock, in, n, a, b, result);
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
       std::exit(2);
