@@ -6,6 +6,8 @@ How much of cuBLAS FP32 GEMM throughput does each classic optimization step reco
 
 ## Setup
 
+Six hand-written FP32 SGEMM versions run against cuBLAS (pure FP32, verified below) at square sizes 256 to 8192, three non-multiple sizes, and one rectangular shape, warm. Every run is checked against cuBLAS, and against a CPU double reference where feasible, before timing.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 188 SMs, hive-dc-7-5-58, `high` |
@@ -41,7 +43,7 @@ All 70 configurations of the main run passed (70 kernel-vs-cuBLAS checks, 42 ker
 
 ### cuBLAS baseline precision check
 
-The cuBLAS baseline is pure FP32. Verified on 2026-09-26 in job 24039529 (same GPU type, `high`), output in `results/stage3/cublas_fp32_check.txt` and `results/stage3/nsys_cublas_*.csv`:
+The cuBLAS baseline is pure FP32, so the percentages of cuBLAS in this stage compare FP32 with FP32. Evidence (job 24039529, 2026-09-26, same GPU type, `high`; `results/stage3/cublas_fp32_check.txt`, `results/stage3/nsys_cublas_*.csv`):
 
 1. Math mode: `src/sgemm.cu` calls `cublasSetMathMode(h, CUBLAS_DEFAULT_MATH)` and `cublasSgemm` (FP32 inputs, FP32 compute). `src/cublas_fp32_check.cu` reads the mode back after `cublasCreate`: 0 (`CUBLAS_DEFAULT_MATH`). cuBLAS version 130501.
 2. Environment: inside the job, `NVIDIA_TF32_OVERRIDE` and `CUBLAS_EMULATION_STRATEGY` are unset, and `env | grep -iE "tf32|cublas"` prints nothing. Slurm jobs inherit the submitting shell environment, which has neither variable.
@@ -54,8 +56,6 @@ The cuBLAS baseline is pure FP32. Verified on 2026-09-26 in job 24039529 (same G
 | 8192 | 2.178e-07 | 2.154e-05 |
 
 4. Kernel: Nsight Systems shows every cuBLAS launch at 4096 and 8192 in the Stage 3 configuration is `cutlass_80_simt_sgemm_256x128_8x4_nn_align1`, a SIMT (CUDA core) FP32 kernel, not a tensor-op kernel. Median duration 2648198 ns at 4096 and 21563385 ns at 8192 under nsys.
-
-The Stage 3 percentages of cuBLAS stand as reported.
 
 Static analysis (`results/stage3/ptxas_sgemm.txt`, `sass_ops_sgemm.csv`, `sass_sgemm_v5_v6.txt`): no kernel spills or uses local memory. Static SASS instruction counts per kernel. Loop unrolling differs between kernels, so these are counts in the binary, not per-iteration or executed counts:
 
@@ -70,6 +70,8 @@ Static analysis (`results/stage3/ptxas_sgemm.txt`, `sass_ops_sgemm.csv`, `sass_s
 | v6 sgemm_vec<...,false> | 95 | 8192 | 0.333 | 8 scalar `LDG.E.CONSTANT`, 64 scalar `STG.E` |
 
 ## Results
+
+Each optimization step recovers more of cuBLAS: at 4096 and 8192, v6 reaches 72.1% and 72.4%, against 1.6% for the naive kernel. The fastest tile configuration (v5 128x128x16x8x8, 30351.3 GFLOP/s at 4096) has the lowest theoretical occupancy in the sweep.
 
 Main run, `results/stage3/sgemm.csv`. GFLOP/s and percentage of cuBLAS at the same size.
 
@@ -129,6 +131,8 @@ Plots: `results/stage3/sgemm_gflops.png`, `sgemm_pct_cublas.png`, `tile_sweep.pn
 
 ## Observations
 
+The largest single gains are v1 to v2 (7.0x) and v3 to v4 (2.33x) at 4096. In the tile sweep, the slowest configurations have the highest theoretical occupancy.
+
 - At 4096, each step changes the median time by: v1 to v2 7.0x faster, v2 to v3 1.42x, v3 to v4 2.33x, v4 to v5 1.20x, v5 to v6 1.60x. v6 is 72.1% of cuBLAS at 4096 and 72.4% at 8192.
 - cuBLAS reaches 52014.8 GFLOP/s at 2048 and stays within 1.8% of that at 4096 and 8192.
 - v1 is 3.3x faster at 4097 than at 4096 (2725.3 vs 824.6 GFLOP/s) and 3.3x faster at 1023 than at 1024 (2459.6 vs 751.9). v2 to v5 change by at most 4.5% between these neighbouring sizes. v6 (scalar fallback at 1023 and 4097) is 6.7% and 8.1% lower than at 1024 and 4096, and cuBLAS is 6.4% and 9.2% lower.
@@ -146,9 +150,11 @@ TODO(Nirak)
 
 ## Open questions
 
-- Why is v1 3.3x faster at 1023 and 4097 than at 1024 and 4096? In v1 the 32 threads of a warp read A from 32 rows K floats apart; with K a power of two those addresses share low-order bits. Test: v1 at K = 4096 with a padded row stride (lda = 4097) versus lda = 4096; DRAM and L2 sector counts (pending counter access).
-- Why do v2 to v5 lose 9% to 26% from 4096 to 8192 while v6 and cuBLAS do not? Is it L2 reuse of A and B across concurrently running blocks (one row of B is 32 KiB at 8192)? Test: L2 hit rate by size (pending counter access), or a block-order swizzle.
+The counter-based tests below are pending counter access (commands in `docs/progress.md`).
+
+- Why is v1 3.3x faster at 1023 and 4097 than at 1024 and 4096? In v1 the 32 threads of a warp read A from 32 rows K floats apart; with K a power of two those addresses share low-order bits. Test: v1 at K = 4096 with a padded row stride (lda = 4097) versus lda = 4096; DRAM and L2 sector counts.
+- Why do v2 to v5 lose 9% to 26% from 4096 to 8192 while v6 and cuBLAS do not? Is it L2 reuse of A and B across concurrently running blocks (one row of B is 32 KiB at 8192)? Test: L2 hit rate by size, or a block-order swizzle.
 - v5 defaults to 2 resident blocks per SM (89 registers x 256 threads). At 1024 only 64 blocks exist for 188 SMs. Is the small-size gap to v4 explained by blocks per SM rather than per-thread efficiency? Test: v5 at 1024 with 64x64 tiles (8645.8 GFLOP/s in the sweep, 1.5x the default).
-- The fastest configuration has the lowest occupancy. What limits the higher-occupancy v4 and v3 configurations: shared memory bandwidth (loads per FFMA), or instruction issue? Test: ncu shared memory throughput and warp stall reasons (pending counter access); count LDS per FFMA from the SASS listings.
+- The fastest configuration has the lowest occupancy. What limits the higher-occupancy v4 and v3 configurations: shared memory bandwidth (loads per FFMA), or instruction issue? Test: ncu shared memory throughput and warp stall reasons; count LDS per FFMA from the SASS listings.
 - v6 gains 1.6x to 2.3x over v5 while issuing the same 64 FFMA per inner loop body. How much of that comes from the float4 global loads, the transposed A in shared memory (4 `LDS.128` instead of 8 `LDS` + 2 `LDS.128`), and the float4 stores? Test: enable each change separately.
 - Would v6 with the BK = 16 configuration that was fastest for v5 close more of the remaining 28% gap to cuBLAS?
