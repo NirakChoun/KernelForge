@@ -1,0 +1,46 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)' for 'sm_120'
+ptxas info    : Function properties for kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 7.390 ms
+ptxas info    : Compiling entry function 'soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 16 registers, used 0 barriers
+ptxas info    : Compile time = 3.032 ms
+ptxas info    : Compiling entry function 'aos_sum(Quad const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for aos_sum(Quad const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers
+ptxas info    : Compile time = 2.726 ms
+ptxas info    : Compiling entry function 'soa_x(unsigned int const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for soa_x(unsigned int const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers
+ptxas info    : Compile time = 1.789 ms
+ptxas info    : Compiling entry function 'aos_x(Quad const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for aos_x(Quad const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 1.891 ms
+ptxas info    : Compiling entry function 'offset_read(unsigned int const*, unsigned int*, unsigned long, int)' for 'sm_120'
+ptxas info    : Function properties for offset_read(unsigned int const*, unsigned int*, unsigned long, int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 2.246 ms
+ptxas info    : Compiling entry function 'gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 1.978 ms
+ptxas info    : Compiling entry function 'strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)' for 'sm_120'
+ptxas info    : Function properties for strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 3.207 ms
+ptxas info    : Compiling entry function 'contiguous(unsigned int const*, unsigned int*, unsigned long)' for 'sm_120'
+ptxas info    : Function properties for contiguous(unsigned int const*, unsigned int*, unsigned long)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers
+ptxas info    : Compile time = 1.812 ms

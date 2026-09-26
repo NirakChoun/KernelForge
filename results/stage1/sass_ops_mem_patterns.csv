@@ -1,0 +1,155 @@
+function,opcode,count
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",NOP,14
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU.64,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",BRA,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",EXIT,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",ISETP.GE.U64.AND,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",S2R,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UMOV,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",HFMA2,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IADD.64,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IMAD.WIDE.U32,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDC,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA.HI.X,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LOP3.LUT,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",STG.E,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIADD3,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIMAD.WIDE.U32,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",NOP,11
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IADD.64,5
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,4
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDCU.64,3
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",EXIT,2
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDC,2
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDCU.128,2
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",BRA,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",HFMA2,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IADD,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IADD3,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IMAD.SHL.U32,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",S2R,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",S2UR,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",SHF.L.U64.HI,1
+"soa_sum(unsigned int const*, unsigned int const*, unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",STG.E,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",NOP,8
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,4
+"aos_sum(Quad const*, unsigned int*, unsigned long)",EXIT,2
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LDC,2
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LDCU.64,2
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LEA,2
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LEA.HI.X,2
+"aos_sum(Quad const*, unsigned int*, unsigned long)",BRA,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",HFMA2,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",IADD,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",IADD3,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",LDCU.128,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",S2R,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",S2UR,1
+"aos_sum(Quad const*, unsigned int*, unsigned long)",STG.E,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",NOP,13
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",EXIT,2
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",IADD.64,2
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",LDC,2
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",LDCU.64,2
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",BRA,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",HFMA2,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",IMAD.SHL.U32,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",LDCU.128,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",S2R,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",S2UR,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",SHF.L.U64.HI,1
+"soa_x(unsigned int const*, unsigned int*, unsigned long)",STG.E,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",NOP,13
+"aos_x(Quad const*, unsigned int*, unsigned long)",EXIT,2
+"aos_x(Quad const*, unsigned int*, unsigned long)",LDC,2
+"aos_x(Quad const*, unsigned int*, unsigned long)",LDCU.64,2
+"aos_x(Quad const*, unsigned int*, unsigned long)",LEA,2
+"aos_x(Quad const*, unsigned int*, unsigned long)",LEA.HI.X,2
+"aos_x(Quad const*, unsigned int*, unsigned long)",BRA,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",HFMA2,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",LDCU.128,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",S2R,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",S2UR,1
+"aos_x(Quad const*, unsigned int*, unsigned long)",STG.E,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",NOP,10
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",EXIT,2
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LDC,2
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LDCU.64,2
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LEA,2
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LEA.HI.X,2
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",BRA,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",HFMA2,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",IADD.64,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",IMAD.WIDE.U32,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",ISETP.GE.U64.AND,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LDCU,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LDCU.128,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",LDG.E.CONSTANT,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",S2R,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",S2UR,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",STG.E,1
+"offset_read(unsigned int const*, unsigned int*, unsigned long, int)",USHF.R.S32.HI,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",NOP,9
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDCU.64,3
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",EXIT,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IADD.64,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDC,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDC.64,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,2
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",BRA,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",HFMA2,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",IMAD.SHL.U32,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",S2R,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",S2UR,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",SHF.L.U64.HI,1
+"gather(unsigned int const*, unsigned int const*, unsigned int*, unsigned long)",STG.E,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",NOP,11
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LDCU.64,4
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LOP3.LUT,4
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",EXIT,2
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LDC,2
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LEA,2
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LEA.HI.X,2
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",BRA,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",HFMA2,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",IMAD.WIDE.U32,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",ISETP.GE.U64.AND,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LDCU.128,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",LDG.E.CONSTANT,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",S2R,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",S2UR,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",SHF.L.U32,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",SHF.L.U64.HI,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",SHF.R.U32.HI,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",SHF.R.U64,1
+"strided(unsigned int const*, unsigned int*, unsigned long, unsigned long, int, int)",STG.E,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",NOP,13
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",EXIT,2
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",IADD.64,2
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",LDC,2
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",LDCU.64,2
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",BRA,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",HFMA2,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",IMAD.SHL.U32,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",IMAD.WIDE.U32,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",ISETP.GE.U64.AND,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",LDCU.128,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",LDG.E.CONSTANT,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",S2R,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",S2UR,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",SHF.L.U64.HI,1
+"contiguous(unsigned int const*, unsigned int*, unsigned long)",STG.E,1
