@@ -66,6 +66,46 @@ __global__ void sgemm_smem(int M, int N, int K, const float* __restrict__ A,
   if (row < M && col < N) C[row * N + col] = acc;
 }
 
+// Loads a ROWS x COLS tile starting at (r0, c0) of a row-major matrix with ld columns
+// into shared memory, zero-filling outside rows x cols. NT threads cooperate.
+template <int ROWS, int COLS, int NT>
+__device__ void load_tile(const float* __restrict__ g, int rows, int cols, int ld, int r0, int c0,
+                          float* __restrict__ s) {
+  for (int i = threadIdx.x; i < ROWS * COLS; i += NT) {
+    const int r = i / COLS, c = i % COLS;
+    const int gr = r0 + r, gc = c0 + c;
+    s[i] = (gr < rows && gc < cols) ? g[gr * ld + gc] : 0.0f;
+  }
+}
+
+// v4: BM x BN tile per block, BK-deep shared tiles; each thread computes TM outputs
+// in one column, reusing one B value from shared memory for TM multiply-adds.
+template <int BM, int BN, int BK, int TM>
+__global__ void __launch_bounds__(BM * BN / TM)
+    sgemm_1d(int M, int N, int K, const float* __restrict__ A, const float* __restrict__ B,
+             float* __restrict__ C) {
+  constexpr int NT = BM * BN / TM;
+  __shared__ float As[BM * BK];
+  __shared__ float Bs[BK * BN];
+  const int t_col = threadIdx.x % BN, t_row = threadIdx.x / BN;
+  const int b_row = blockIdx.y * BM, b_col = blockIdx.x * BN;
+  float acc[TM] = {};
+  for (int k0 = 0; k0 < K; k0 += BK) {
+    load_tile<BM, BK, NT>(A, M, K, K, b_row, k0, As);
+    load_tile<BK, BN, NT>(B, K, N, N, k0, b_col, Bs);
+    __syncthreads();
+    for (int d = 0; d < BK; ++d) {
+      const float b = Bs[d * BN + t_col];
+      for (int i = 0; i < TM; ++i) acc[i] += As[(t_row * TM + i) * BK + d] * b;
+    }
+    __syncthreads();
+  }
+  for (int i = 0; i < TM; ++i) {
+    const int r = b_row + t_row * TM + i, c = b_col + t_col;
+    if (r < M && c < N) C[r * N + c] = acc[i];
+  }
+}
+
 struct Plan {
   std::string name, variant, grid, block;
   kf::KernelInfo ki;
@@ -101,6 +141,14 @@ static Plan smem_plan(const Problem& p) {
                      dim3(cdiv(p.N, T), cdiv(p.M, T)), dim3(T, T), p);
 }
 
+template <int BM, int BN, int BK, int TM>
+static Plan blocktile_1d_plan(const Problem& p) {
+  const std::string cfg = std::to_string(BM) + "x" + std::to_string(BN) + "x" + std::to_string(BK) +
+                          "x" + std::to_string(TM);
+  return kernel_plan("v4_1d_regblock", "BMxBNxBKxTM=" + cfg, sgemm_1d<BM, BN, BK, TM>,
+                     dim3(cdiv(p.N, BN), cdiv(p.M, BM)), dim3(BM * BN / TM), p);
+}
+
 static Plan make_plan(int version, const std::string& cfg, const Problem& p, cublasHandle_t h) {
   auto bad_cfg = [&]() -> Plan {
     std::fprintf(stderr, "unknown --cfg '%s' for version %d\n", cfg.c_str(), version);
@@ -132,6 +180,13 @@ static Plan make_plan(int version, const std::string& cfg, const Problem& p, cub
       if (cfg.empty() || cfg == "32") return smem_plan<32>(p);
       if (cfg == "16") return smem_plan<16>(p);
       if (cfg == "8") return smem_plan<8>(p);
+      return bad_cfg();
+    case 4:
+      if (cfg.empty() || cfg == "64x64x8x8") return blocktile_1d_plan<64, 64, 8, 8>(p);
+      if (cfg == "32x32x8x4") return blocktile_1d_plan<32, 32, 8, 4>(p);
+      if (cfg == "64x64x16x8") return blocktile_1d_plan<64, 64, 16, 8>(p);
+      if (cfg == "128x64x8x8") return blocktile_1d_plan<128, 64, 8, 8>(p);
+      if (cfg == "64x64x8x16") return blocktile_1d_plan<64, 64, 8, 16>(p);
       return bad_cfg();
     default:
       std::fprintf(stderr, "unknown --version %d\n", version);
