@@ -1,0 +1,690 @@
+function,opcode,count
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",NOP,14
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDCU.64,3
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",BRA,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",EXIT,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",ISETP.GE.U64.AND,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",S2R,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UMOV,2
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",HFMA2,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IADD.64,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",IMAD.WIDE.U32,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LDC,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LEA.HI.X,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",LOP3.LUT,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",STG.E,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIADD3,1
+"kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)",UIMAD.WIDE.U32,1
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,77
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,64
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,59
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",CS2R,31
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,30
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,22
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,22
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,20
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,20
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,17
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,15
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,15
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,14
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,14
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",STS,14
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,13
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,11
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,9
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.AND,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,8
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,7
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,5
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,5
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,5
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,4
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,3
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",P2R,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,1
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LE.AND,1
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1
+"void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",FFMA,128
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IADD,21
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,17
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDS.64,16
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",STG.E,16
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",NOP,15
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LEA,13
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDS.128,8
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",MOV,8
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,7
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDC.64,6
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDCU,6
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",BRA,5
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",CS2R,5
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",HFMA2,5
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,5
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,5
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IADD.64,4
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LEA.HI.X,4
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LOP3.LUT,4
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",S2UR,4
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IMAD,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDC,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LEA.HI,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ULEA,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",UMOV,3
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IADD3,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",S2R,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",USHF.L.U32,2
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,1
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,1
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,71
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,64
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,50
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",CS2R,31
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,20
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,18
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,16
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,15
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,12
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,12
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,10
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,10
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.AND,9
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,9
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STS,8
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,7
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,6
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,6
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,6
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,6
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,5
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,5
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,4
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,4
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,3
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,3
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,3
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",P2R,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD3,1
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,1
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",VIMNMX.U32,1
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,77
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,64
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,53
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",CS2R,32
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,23
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,23
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,22
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,17
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,16
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,16
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,15
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,14
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STS,14
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,13
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,11
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,10
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.AND,9
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,9
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,9
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,8
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,8
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,7
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,7
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,6
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,6
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,6
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,6
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,6
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,5
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,4
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,4
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,4
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",P2R,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD3,1
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,1
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)",VIMNMX.U32,1
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,65
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,64
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,37
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",CS2R,29
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,18
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,14
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,11
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,10
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,9
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,9
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,9
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.AND,8
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,8
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,6
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,6
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,5
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,5
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,4
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,4
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,3
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,3
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,3
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,3
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",P2R,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,1
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,1
+"void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",FFMA,32
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",IADD,24
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",IMAD,23
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDC.64,18
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,17
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,17
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDS.64,16
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",STG.E,16
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",NOP,11
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",MOV,10
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",BRA,7
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDCU,6
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",CS2R,5
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",HFMA2,5
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",S2R,5
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,4
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LEA,4
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LOP3.LUT,4
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDC,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",S2UR,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ULEA,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",UMOV,3
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LDS,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",LEA.HI,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,1
+"void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,17
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,16
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,14
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,10
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,10
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,9
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,8
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,6
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,5
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,4
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,4
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,3
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,3
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,3
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,3
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,2
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,1
+"void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.L.U32,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",FFMA,32
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",IADD,16
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",IMAD,14
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",NOP,14
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDC.64,10
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,9
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDS.128,8
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",MOV,8
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",STG.E,8
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDCU,7
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",S2R,6
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",BRA,5
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LEA,5
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",HFMA2,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDS,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",S2UR,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ULEA,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,3
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,3
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",UIADD3,3
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",CS2R,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.U32.AND,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDC,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",SHF.L.U32,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,1
+"void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",FFMA,32
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",NOP,14
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",IADD,10
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDS.128,8
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",IMAD,6
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDC.64,6
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",BRA,5
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,5
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,5
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LOP3.LUT,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",MOV,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",STG.E,4
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",HFMA2,3
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDC,3
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDCU,3
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",S2UR,3
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LEA,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",UMOV,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",USHF.L.U32,2
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",LEA.HI,1
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",S2R,1
+"void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)",SHF.L.U32,1
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDS.128,16
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IADD,14
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",NOP,14
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD,10
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDC.64,10
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,9
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDS,8
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",STG.E,8
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LOP3.LUT,5
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BRA,4
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,4
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",MOV,4
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",HFMA2,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDC,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",S2UR,3
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",CS2R,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LEA,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",S2R,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",UMOV,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",USHF.L.U32,2
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.GT.U32.AND,1
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",LEA.HI,1
+"void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)",SHF.L.U32,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",FFMA,24
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDS,24
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",NOP,10
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",IMAD,9
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",IADD,8
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,7
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LEA,7
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",MOV,7
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",UIADD3,7
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDC.64,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDS.128,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",STS,6
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",BRA.U,4
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",HFMA2,4
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDCU,4
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",S2R,4
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",LDC,2
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",UISETP.NE.U32.AND,2
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",ULOP3.LUT,2
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",BRA,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",IADD.64,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",S2UR,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",STG.E,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1
+"void sgemm_smem<8>(int, int, int, float const*, float const*, float*)",USHF.R.U32.HI,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",FFMA,48
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDS,48
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDS.128,12
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",NOP,12
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LEA,10
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",IADD,8
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,7
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",MOV,7
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",UIADD3,7
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",IMAD,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDC.64,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",STS,6
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",BRA.U,4
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",HFMA2,4
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDCU,4
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",S2R,4
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",UMOV,4
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",LDC,2
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",UISETP.NE.U32.AND,2
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",ULOP3.LUT,2
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",BRA,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",IADD.64,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",S2UR,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",STG.E,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1
+"void sgemm_smem<16>(int, int, int, float const*, float const*, float*)",USHF.R.U32.HI,1
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",FFMA,32
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDS,32
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",NOP,9
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDS.128,8
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LEA,8
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDCU,4
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",S2R,4
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",IADD,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",IMAD,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDC.64,3
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",EXIT,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",HFMA2,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDC,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDCU.64,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",MOV,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",STS,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",UMOV,2
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",BRA,1
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",S2UR,1
+"void sgemm_smem<32>(int, int, int, float const*, float const*, float*)",STG.E,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IADD,81
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,77
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",STG.E,64
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",CS2R,30
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IMAD,21
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",NOP,21
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDC.64,16
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,16
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,15
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",MOV,14
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDCU,13
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",BRA,10
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LOP3.LUT,10
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,9
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDCU.64,9
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LEA,9
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,8
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,7
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,7
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",HFMA2,7
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,7
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",S2R,7
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDS.128,4
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",STS,4
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",EXIT,3
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IADD3,2
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",BRA.U,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LDC,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",LEA.HI,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",S2UR,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",STS.128,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",UIADD3,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1
+"void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)",UMOV,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",FFMA,64
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",CS2R,36
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,26
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IADD,25
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",NOP,18
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",BRA,16
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",SHF.R.S32.HI,16
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",STG.E.128,16
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IMAD,13
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDCU,13
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDC.64,10
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IMAD.WIDE,9
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDCU.64,9
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LEA,9
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IADD.64,8
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LEA.HI.X,8
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LOP3.LUT,8
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",BSSY.RECONVERGENT,7
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",BSYNC.RECONVERGENT,7
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",MOV,7
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IMAD.SHL.U32,6
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",S2R,6
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDS.128,4
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",STS,4
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",EXIT,3
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",BAR.SYNC.DEFER_BLOCKING,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",BRA.U,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDG.E.128.CONSTANT,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LEA.HI,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",S2UR,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",SHF.R.U32.HI,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",UIADD3,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",ULEA,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",UMOV,2
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",HFMA2,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",ISETP.LT.AND,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",ISETP.NE.U32.AND,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",LDC,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",STS.128,1
+"void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)",USHF.L.U32,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,30
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",IMAD.WIDE,16
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",FFMA,15
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LDC.64,10
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",BRA.U,8
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",NOP,8
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",IMAD,5
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LEA,5
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",UIADD3,5
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",IADD.64,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",IMAD.WIDE.U32,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",MOV,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",S2R,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",UISETP.NE.U32.AND,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",ULOP3.LUT,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",UMOV,4
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",HFMA2,3
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",IADD,3
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LDCU.64,3
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",EXIT,2
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LEA.HI.X,2
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",UISETP.GE.U32.AND,2
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",BRA,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LDC,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",LDCU,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",STG.E,1
+"sgemm_coalesced(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LDG.E.CONSTANT,30
+"sgemm_naive(int, int, int, float const*, float const*, float*)",IMAD.WIDE,20
+"sgemm_naive(int, int, int, float const*, float const*, float*)",FFMA,15
+"sgemm_naive(int, int, int, float const*, float const*, float*)",NOP,13
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LDC.64,10
+"sgemm_naive(int, int, int, float const*, float const*, float*)",BRA.U,8
+"sgemm_naive(int, int, int, float const*, float const*, float*)",IMAD,5
+"sgemm_naive(int, int, int, float const*, float const*, float*)",UIADD3,5
+"sgemm_naive(int, int, int, float const*, float const*, float*)",S2R,4
+"sgemm_naive(int, int, int, float const*, float const*, float*)",UISETP.NE.U32.AND,4
+"sgemm_naive(int, int, int, float const*, float const*, float*)",ULOP3.LUT,4
+"sgemm_naive(int, int, int, float const*, float const*, float*)",IADD,3
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LEA,3
+"sgemm_naive(int, int, int, float const*, float const*, float*)",MOV,3
+"sgemm_naive(int, int, int, float const*, float const*, float*)",EXIT,2
+"sgemm_naive(int, int, int, float const*, float const*, float*)",IADD.64,2
+"sgemm_naive(int, int, int, float const*, float const*, float*)",UISETP.GE.U32.AND,2
+"sgemm_naive(int, int, int, float const*, float const*, float*)",UMOV,2
+"sgemm_naive(int, int, int, float const*, float const*, float*)",BRA,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",HFMA2,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",ISETP.GE.AND,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",ISETP.GE.OR,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LDC,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LDCU,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",LDCU.64,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",STG.E,1
+"sgemm_naive(int, int, int, float const*, float const*, float*)",UISETP.GE.AND,1

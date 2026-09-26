@@ -1,0 +1,91 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)' for 'sm_120'
+ptxas info    : Function properties for kf::detail::l2_flush_kernel(unsigned int*, unsigned long, unsigned int)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers
+ptxas info    : Compile time = 5.546 ms
+ptxas info    : Compiling entry function 'void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_2d<128, 128, 16, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 97 registers, used 1 barriers, 16384 bytes smem
+ptxas info    : Compile time = 65.982 ms
+ptxas info    : Compiling entry function 'void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_2d<64, 64, 8, 4, 4>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 1 barriers, 4096 bytes smem
+ptxas info    : Compile time = 33.857 ms
+ptxas info    : Compiling entry function 'void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_2d<128, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 6144 bytes smem
+ptxas info    : Compile time = 67.381 ms
+ptxas info    : Compiling entry function 'void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_2d<64, 64, 8, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 4096 bytes smem
+ptxas info    : Compile time = 68.849 ms
+ptxas info    : Compiling entry function 'void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_2d<128, 128, 8, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 89 registers, used 1 barriers, 8192 bytes smem
+ptxas info    : Compile time = 46.869 ms
+ptxas info    : Compiling entry function 'void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_1d<64, 64, 8, 16>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 4096 bytes smem
+ptxas info    : Compile time = 22.676 ms
+ptxas info    : Compiling entry function 'void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_1d<128, 64, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 1 barriers, 6144 bytes smem
+ptxas info    : Compile time = 19.677 ms
+ptxas info    : Compiling entry function 'void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_1d<64, 64, 16, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 8192 bytes smem
+ptxas info    : Compile time = 18.674 ms
+ptxas info    : Compiling entry function 'void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_1d<32, 32, 8, 4>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem
+ptxas info    : Compile time = 13.991 ms
+ptxas info    : Compiling entry function 'void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_1d<64, 64, 8, 8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 1 barriers, 4096 bytes smem
+ptxas info    : Compile time = 20.366 ms
+ptxas info    : Compiling entry function 'void sgemm_smem<8>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_smem<8>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 512 bytes smem
+ptxas info    : Compile time = 14.516 ms
+ptxas info    : Compiling entry function 'void sgemm_smem<16>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_smem<16>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 2048 bytes smem
+ptxas info    : Compile time = 18.843 ms
+ptxas info    : Compiling entry function 'void sgemm_smem<32>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_smem<32>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 1 barriers, 8192 bytes smem
+ptxas info    : Compile time = 13.037 ms
+ptxas info    : Compiling entry function 'void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_vec<128, 128, 8, 8, 8, false>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 8192 bytes smem
+ptxas info    : Compile time = 48.840 ms
+ptxas info    : Compiling entry function 'void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for void sgemm_vec<128, 128, 8, 8, 8, true>(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 94 registers, used 1 barriers, 8192 bytes smem
+ptxas info    : Compile time = 32.718 ms
+ptxas info    : Compiling entry function 'sgemm_coalesced(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for sgemm_coalesced(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers
+ptxas info    : Compile time = 10.447 ms
+ptxas info    : Compiling entry function 'sgemm_naive(int, int, int, float const*, float const*, float*)' for 'sm_120'
+ptxas info    : Function properties for sgemm_naive(int, int, int, float const*, float const*, float*)
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 31 registers, used 0 barriers
+ptxas info    : Compile time = 9.426 ms
