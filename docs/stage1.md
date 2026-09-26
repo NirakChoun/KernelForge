@@ -6,6 +6,8 @@ How much effective bandwidth does each global memory read pattern reach, relativ
 
 ## Setup
 
+One binary times each read pattern at 1 GiB of input with L2 flushed; all patterns write their output contiguously and are checked exactly before timing.
+
 | Item | Value |
 |---|---|
 | GPU | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, hive-dc-7-5-58, `high` |
@@ -34,6 +36,8 @@ Static analysis (`results/stage1/ptxas_mem_patterns.txt`, `sass_ops_mem_patterns
 
 ## Results
 
+Contiguous, offset, and SoA reads stay at 97.1% to 97.7% of achievable bandwidth. Strided reads fall to 23.0% at stride 8, random gather to 11.8%, and reading one field of an AoS struct to 40.4%.
+
 From `results/stage1/patterns.csv`. Percentages are of 1530 GB/s (achievable) and 1792.1 GB/s (nominal).
 
 | Pattern | Median (ms) | Effective GB/s | % achievable | % nominal |
@@ -58,9 +62,11 @@ From `results/stage1/patterns.csv`. Percentages are of 1530 GB/s (achievable) an
 
 ### How effective bandwidth is counted
 
-Effective bandwidth = useful bytes / median time. Useful bytes are the bytes the algorithm must move once: every 4-byte element the kernel reads that it uses, plus every 4-byte element it writes. Bytes that the hardware moves but the kernel does not use (the rest of a 32-byte sector, re-fetches) are not counted, so a pattern that wastes DRAM traffic shows a lower effective bandwidth. The per-pattern useful bytes are in the table above (`bytes` column of `results/stage1/patterns.csv`).
+Effective bandwidth counts only the bytes the algorithm must move; a 32-byte sector model estimates the DRAM traffic each pattern actually causes.
 
-The second estimate (`scripts/sector_model.py`, output `results/stage1/sector_model.csv`) counts DRAM bytes under a 32-byte sector model: DRAM transfers whole 32-byte sectors (8 elements); a sector is fetched once each time the pattern touches it, with no L2 reuse between strided passes (each pass spans the whole 1 GiB input, 8x the 128 MiB L2) and full reuse between neighbouring warps within a pass. Writes are contiguous in every pattern and count at their useful size. The model is an estimate from the access pattern, not a measurement; DRAM byte counters are pending (see `docs/progress.md`).
+Useful bytes are every 4-byte element the kernel reads and uses, plus every 4-byte element it writes. Bytes the hardware moves but the kernel does not use (the rest of a 32-byte sector, re-fetches) are not counted, so a pattern that wastes DRAM traffic shows a lower effective bandwidth. Per-pattern useful bytes are in the `bytes` column of `results/stage1/patterns.csv`.
+
+The sector model (`scripts/sector_model.py`, output `results/stage1/sector_model.csv`) assumes DRAM transfers whole 32-byte sectors (8 elements); a sector is fetched once each time the pattern touches it, with no L2 reuse between strided passes (each pass spans the whole 1 GiB input, 8x the 128 MiB L2) and full reuse between neighbouring warps within a pass. Writes are contiguous in every pattern and count at their useful size. The model is an estimate from the access pattern, not a measurement.
 
 | Pattern | Useful bytes | Model DRAM bytes | Model / useful | Effective GB/s (useful) | Model DRAM GB/s |
 |---|---|---|---|---|---|
@@ -84,9 +90,11 @@ Plots: `results/stage1/stride.png`, `results/stage1/offset.png`, `results/stage1
 
 ## Observations
 
+Effective bandwidth falls with stride up to stride 8 and again at 64. Under the sector model, strides 2 to 32 and aos_x imply DRAM rates of 1528.5 to 1601.7 GB/s; stride 64 and gather imply much lower rates.
+
 - Strided reads: effective bandwidth drops by 31.7% from stride 1 to 2 (1491.6 to 1019.0 GB/s), by 39.1% from 2 to 4, and by 43.3% from 4 to 8. Strides 8, 16, and 32 are within 1.1% of each other (352.2 to 355.9 GB/s). Stride 64 is 29.3% below stride 32 (250.1 GB/s) and has the largest spread (stddev 0.138 ms, min 8.180 ms vs median 8.587 ms).
 - Median time at stride 2 is 1.46x stride 1, at stride 4 2.40x, and at strides 8 to 32 4.19x to 4.23x.
-- A reads-only sector-waste prediction scales the time by the read over-fetch alone: 2x at stride 2 and 8x at stride 8. The measured time ratios to stride 1 are 1.46x and 4.23x. The difference comes from the write stream, which is half of the stride-1 traffic and does not grow with stride: with writes included, the sector model gives total DRAM traffic of 1.5x (stride 2) and 4.5x (stride 8) the stride-1 traffic. Measured times are 2.4% below the 1.5x model at stride 2 and 5.9% below the 4.5x model at stride 8, so the model DRAM rates are 1528.5 GB/s (stride 2) and 1585.0 GB/s (stride 8), against 1491.6 GB/s at stride 1.
+- Counting read over-fetch alone would predict 2x (stride 2) and 8x (stride 8) the stride-1 time; measured ratios are 1.46x and 4.23x. The write stream, half of the stride-1 traffic, does not grow with stride: with writes included, the sector model gives total DRAM traffic of 1.5x (stride 2) and 4.5x (stride 8). Measured times are 2.4% below the 1.5x model at stride 2 and 5.9% below the 4.5x model at stride 8, so the model DRAM rates are 1528.5 GB/s (stride 2) and 1585.0 GB/s (stride 8), against 1491.6 GB/s at stride 1.
 - Under the sector model, strides 4 to 32 and aos_x imply DRAM rates of 1545.7 to 1601.7 GB/s, above the 1530 GB/s achievable figure; stride 64 implies 1125.3 GB/s and gather 601.6 GB/s.
 - Random gather reaches 180.5 GB/s of useful traffic, 12.1% of contiguous.
 - Every offset from 1 to 31 gives the same median, 1.445888 ms, 0.43% slower than offset 0 (1.439744 ms) and 0.57% slower than offset 32 (1.437696 ms). Both values are integer multiples of 1.024 us (1412 and 1404 steps), the timing pattern recorded in Stage 0.
@@ -100,7 +108,9 @@ TODO(Nirak)
 
 ## Open questions
 
-- Does DRAM traffic per useful byte explain the stride curve? A 32-byte sector holds 8 elements. If every read fetched whole sectors that were not reused, reads at stride 2, 4, and 8+ would move 2x, 4x, and 8x the useful read bytes, and total traffic (reads plus the unchanged writes) would be 1.5x, 2.5x, and 4.5x contiguous. Measured time ratios are 1.46x, 2.40x, and 4.19x to 4.23x. Test: sectors per request and `dram__bytes_read.sum` for stride 1, 2, 4, 8, 64 (pending counter access).
+Each question below needs DRAM or sector counters to settle; those are pending counter access (commands in `docs/progress.md`).
+
+- Does DRAM traffic per useful byte explain the stride curve? A 32-byte sector holds 8 elements. If every read fetched whole sectors that were not reused, reads at stride 2, 4, and 8+ would move 2x, 4x, and 8x the useful read bytes, and total traffic (reads plus the unchanged writes) would be 1.5x, 2.5x, and 4.5x contiguous. Measured time ratios are 1.46x, 2.40x, and 4.19x to 4.23x. Test: sectors per request and `dram__bytes_read.sum` for stride 1, 2, 4, 8, 64.
 - Why is stride 64 slower than stride 32 when both should fetch one sector per element? Candidates to test: DRAM page or bank conflicts, TLB reach for a 256-byte stride across 1 GiB.
 - Is gather limited by DRAM sector efficiency (one 4-byte element per 32-byte sector, 1/8) or by latency with 1 load in flight per thread? Test: gather with several independent loads per thread; ncu sectors per request.
 - Why do all offsets 1 to 31 cost the same, including offsets that are multiples of 8 (32-byte sector aligned) and 16? Is the extra cost only the one additional 128-byte line per warp, independent of alignment within it?
